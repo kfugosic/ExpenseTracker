@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="daily_reminder"
+        android:summaryOn="You will recieve reminder every afternoon"
+        android:title="Daily reminder"
+        />
+
+    <Preference
+        android:key="renameCourses"
+        android:title="Test"
+        android:summary="test">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.kfugosic.expensetracker"
+            android:targetClass="com.kfugosic.expensetracker.CategoriesActivity" />
+    </Preference>
+
+</PreferenceScreen>
