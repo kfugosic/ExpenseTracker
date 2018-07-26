@@ -1,7 +1,9 @@
-package com.kfugosic.expensetracker;
+package com.kfugosic.expensetracker.ui;
 
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceFragmentCompat;
+
+import com.kfugosic.expensetracker.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 

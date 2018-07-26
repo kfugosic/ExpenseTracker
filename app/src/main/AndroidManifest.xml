@@ -19,7 +19,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:launchMode="singleTop"
             tools:ignore="GoogleAppIndexingWarning">
             <intent-filter>
@@ -28,10 +28,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
         <activity
-            android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity"></activity>
-        <activity android:name=".CategoriesActivity"></activity>
+            android:name=".ui.SettingsActivity"
+            android:parentActivityName=".ui.MainActivity">
+        </activity>
+        <activity 
+            android:name=".ui.CategoriesActivity"
+            android:parentActivityName=".ui.SettingsActivity">
+        </activity>
+        <provider
+            android:authorities="com.kfugosic.expensetracker"
+            android:name=".data.categories.CategoriesContentProvider"
+            android:exported="false" />
+        
     </application>
 
 </manifest>

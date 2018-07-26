@@ -2,6 +2,6 @@
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xlmns="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_settings"
-    android:name="com.kfugosic.expensetracker.SettingsFragment"
+    android:name="com.kfugosic.expensetracker.ui.SettingsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
