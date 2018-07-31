@@ -2,6 +2,7 @@ package com.kfugosic.expensetracker.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -13,15 +14,28 @@ import com.kfugosic.expensetracker.recyclerviews.CategoriesAdapter;
 
 import java.lang.ref.WeakReference;
 
-public class CategoriesLoader implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DataLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String TAG = "CategoriesLoader";
+    private static final String TAG = "DataLoader";
     private WeakReference<Context> mContext;
-    private CategoriesAdapter mAdapter;
+    private IDataLoaderListener mListener;
 
-    public CategoriesLoader(Context context, CategoriesAdapter adapter) {
+    private Uri mUri;
+    private String mSelection;
+    private String[] mSelectionArgs;
+
+    public DataLoader(Context context, IDataLoaderListener listener, Uri uri) {
         mContext = new WeakReference<>(context);
-        mAdapter = adapter;
+        mListener = listener;
+        mUri = uri;
+    }
+
+    public DataLoader(Context context, IDataLoaderListener listener, Uri uri, String selection, String[] selectionArgs) {
+        mContext = new WeakReference<>(context);
+        mListener = listener;
+        mUri = uri;
+        mSelection = selection;
+        mSelectionArgs = selectionArgs;
     }
 
     @Override
@@ -44,10 +58,10 @@ public class CategoriesLoader implements LoaderManager.LoaderCallbacks<Cursor> {
             @Override
             public Cursor loadInBackground() {
                 try {
-                    return mContext.get().getContentResolver().query(CategoriesContract.CategoriesEntry.CONTENT_URI,
+                    return mContext.get().getContentResolver().query(mUri,
                             null,
-                            null,
-                            null,
+                            mSelection,
+                            mSelectionArgs,
                             null);
 
                 } catch (Exception e) {
@@ -68,12 +82,12 @@ public class CategoriesLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter.swapCursor(data);
+        mListener.onDataLoaded(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapter.swapCursor(null);
+        mListener.onDataLoaded(null);
     }
 
 }

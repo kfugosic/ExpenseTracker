@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +35,15 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.adView)
     AdView mAdView;
+    @BindView(R.id.btn_add)
+    Button mAddButton;
+    @BindView(R.id.test)
+    View mExpandable;
+
+    @OnClick(R.id.btn_add)
+    void onAddButtonClick() {
+       startActivity(new Intent(this, NewExpenseActivity.class));
+    }
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
 

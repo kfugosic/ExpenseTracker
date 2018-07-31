@@ -2,29 +2,23 @@ package com.kfugosic.expensetracker.ui;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.flask.colorpicker.ColorPickerView;
-import com.flask.colorpicker.OnColorSelectedListener;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.kfugosic.expensetracker.R;
 import com.kfugosic.expensetracker.data.categories.CategoriesContract;
-import com.kfugosic.expensetracker.loaders.CategoriesLoader;
+import com.kfugosic.expensetracker.loaders.DataLoader;
 import com.kfugosic.expensetracker.recyclerviews.CategoriesAdapter;
 
 import butterknife.BindView;
@@ -34,7 +28,8 @@ import butterknife.OnClick;
 public class CategoriesActivity extends AppCompatActivity {
 
     private static final String TAG = "CategoriesActivity";
-    private static final int CATEGORIES_LOADER_ID = 101;
+    public static final int CATEGORIES_LOADER_ID = 101;
+    private static final String CACHED_COLOR_KEY = "color_picker";
 
     @BindView(R.id.rv_categories)
     RecyclerView mCategoriesRecyclerView;
@@ -46,7 +41,8 @@ public class CategoriesActivity extends AppCompatActivity {
     Button mAddButton;
 
     private CategoriesAdapter mAdapter;
-    private CategoriesLoader mLoader;
+    private DataLoader mLoader;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +55,7 @@ public class CategoriesActivity extends AppCompatActivity {
         mAdapter = new CategoriesAdapter(this, null);
         mCategoriesRecyclerView.setAdapter(mAdapter);
 
-        mLoader = new CategoriesLoader(this, mAdapter);
+        mLoader = new DataLoader(this, mAdapter, CategoriesContract.CategoriesEntry.CONTENT_URI);
         getSupportLoaderManager().initLoader(CATEGORIES_LOADER_ID, null, mLoader);
 
     }
@@ -103,4 +99,24 @@ public class CategoriesActivity extends AppCompatActivity {
         getSupportLoaderManager().restartLoader(CATEGORIES_LOADER_ID, null, mLoader);
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        int color = ((ColorDrawable)mColorPickerView.getBackground()).getColor();
+        outState.putInt(CACHED_COLOR_KEY, color);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        if(savedInstanceState != null && savedInstanceState.containsKey(CACHED_COLOR_KEY)) {
+            int color = savedInstanceState.getInt(CACHED_COLOR_KEY);
+            mColorPickerView.setBackgroundColor(color);
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    public DataLoader getLoader() {
+        return mLoader;
+    }
 }

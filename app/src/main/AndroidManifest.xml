@@ -28,20 +28,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity
             android:name=".ui.SettingsActivity"
-            android:parentActivityName=".ui.MainActivity">
-        </activity>
-        <activity 
+            android:parentActivityName=".ui.MainActivity"></activity>
+        <activity
             android:name=".ui.CategoriesActivity"
-            android:parentActivityName=".ui.SettingsActivity">
-        </activity>
+            android:parentActivityName=".ui.SettingsActivity"></activity>
+
+        <activity android:name=".ui.NewExpenseActivity"
+            android:parentActivityName=".ui.MainActivity"></activity>
+
         <provider
-            android:authorities="com.kfugosic.expensetracker"
             android:name=".data.categories.CategoriesContentProvider"
+            android:authorities="com.kfugosic.expensetracker.data.categories"
             android:exported="false" />
-        
+
+        <provider
+            android:name=".data.expenses.ExpensesContentProvider"
+            android:authorities="com.kfugosic.expensetracker.data.expenses"
+            android:exported="false" />
+
     </application>
 
 </manifest>

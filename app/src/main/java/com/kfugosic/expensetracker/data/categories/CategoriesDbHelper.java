@@ -21,6 +21,8 @@ public class CategoriesDbHelper extends SQLiteOpenHelper {
                 CategoriesEntry.COLUMN_NAME + " TEXT NOT NULL, " +
                 CategoriesEntry.COLUMN_COLOR + " INTEGER NOT NULL);";
         sqLiteDatabase.execSQL(CREATE_TABLE);
+
+        //TODO insertat defaultne
     }
 
     @Override

@@ -1,13 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/category_name"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/primary_text_light"
-        style="@style/TextAppearance.AppCompat.Large" />
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/category_color"
+            android:layout_width="@dimen/rectangle_dim"
+            android:layout_height="@dimen/rectangle_dim"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="15dp"
+            android:background="@color/colorAccent"/>
+
+        <TextView
+            android:id="@+id/category_name"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"
+            android:textColor="@android:color/primary_text_light"
+            style="@style/TextAppearance.AppCompat.Large" />
+
+        <View
+            android:id="@+id/category_delete"
+            android:layout_width="@dimen/rectangle_dim"
+            android:layout_height="@dimen/rectangle_dim"
+            android:layout_gravity="end"
+            android:layout_margin="15dp"
+            android:background="@drawable/ic_delete_gray_24dp"
+            android:backgroundTint="@color/colorAccent"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_gray"
+        android:layout_marginHorizontal="10dp" />
 
 </LinearLayout>

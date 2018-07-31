@@ -1,4 +1,4 @@
-package com.kfugosic.expensetracker.data.categories;
+package com.kfugosic.expensetracker.data.expenses;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -9,32 +9,31 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-public class CategoriesContentProvider extends ContentProvider {
+public class ExpensesContentProvider extends ContentProvider {
 
-    private static final int CATEGORIES = 100;
-    private static final int SPECIFIC_CATEGORY = 101;
+    private static final int EXPENSES = 200;
+    private static final int SPECIFIC_EXPENSE = 201;
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
-    private CategoriesDbHelper mCategoriesDbHelper;
+    private ExpensesHelper mExpensesHelper;
 
     @Override
     public boolean onCreate() {
-        mCategoriesDbHelper = new CategoriesDbHelper(getContext());
+        mExpensesHelper = new ExpensesHelper(getContext());
         return true;
     }
 
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        final SQLiteDatabase db = mCategoriesDbHelper.getReadableDatabase();
+        final SQLiteDatabase db = mExpensesHelper.getReadableDatabase();
         int match = sUriMatcher.match(uri);
         Cursor resultCursor = null;
         switch (match) {
-            case CATEGORIES:
+            case EXPENSES:
                 resultCursor = db.query(
-                        CategoriesContract.CategoriesEntry.TABLE_NAME,
+                        ExpensesContract.ExpensesEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -42,9 +41,6 @@ public class CategoriesContentProvider extends ContentProvider {
                         null,
                         sortOrder
                 );
-                break;
-            case SPECIFIC_CATEGORY:
-                Log.d("TAG123", "query: ");
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -57,14 +53,14 @@ public class CategoriesContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        final SQLiteDatabase db = mCategoriesDbHelper.getWritableDatabase();
+        final SQLiteDatabase db = mExpensesHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
         Uri resultUri = null;
         switch (match) {
-            case CATEGORIES:
-                long id = db.insert(CategoriesContract.CategoriesEntry.TABLE_NAME, null, contentValues);
+            case EXPENSES:
+                long id = db.insert(ExpensesContract.ExpensesEntry.TABLE_NAME, null, contentValues);
                 if (id > 0) {
-                    resultUri = ContentUris.withAppendedId(CategoriesContract.CategoriesEntry.CONTENT_URI, id);
+                    resultUri = ContentUris.withAppendedId(ExpensesContract.ExpensesEntry.CONTENT_URI, id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -78,15 +74,15 @@ public class CategoriesContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        final SQLiteDatabase db = mCategoriesDbHelper.getWritableDatabase();
+        final SQLiteDatabase db = mExpensesHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
         int tasksDeleted = 0;
         switch (match) {
-            case SPECIFIC_CATEGORY:
-            case CATEGORIES:
+            case SPECIFIC_EXPENSE:
+            case EXPENSES:
                 if (selection != null && selectionArgs != null) {
                     tasksDeleted = db.delete(
-                            CategoriesContract.CategoriesEntry.TABLE_NAME,
+                            ExpensesContract.ExpensesEntry.TABLE_NAME,
                             selection,
                             selectionArgs
                     );
@@ -103,14 +99,14 @@ public class CategoriesContentProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        final SQLiteDatabase db = mCategoriesDbHelper.getWritableDatabase();
+        final SQLiteDatabase db = mExpensesHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
         int tasksUpdated = 0;
         switch (match) {
-            case SPECIFIC_CATEGORY:
+            case SPECIFIC_EXPENSE:
                 String id = uri.getPathSegments().get(1);
                 tasksUpdated = db.update(
-                        CategoriesContract.CategoriesEntry.TABLE_NAME,
+                        ExpensesContract.ExpensesEntry.TABLE_NAME,
                         contentValues,
                         "_id=?",
                         new String[]{id}
@@ -130,10 +126,10 @@ public class CategoriesContentProvider extends ContentProvider {
     public String getType(@NonNull Uri uri) {
         int match = sUriMatcher.match(uri);
         switch (match) {
-            case CATEGORIES:
-                return "vnd.android.cursor.dir" + "/" + CategoriesContract.AUTHORITY + "/" + CategoriesContract.PATH_CATEGORIES;
-            case SPECIFIC_CATEGORY:
-                return "vnd.android.cursor.item" + "/" + CategoriesContract.AUTHORITY + "/" + CategoriesContract.PATH_CATEGORIES;
+            case EXPENSES:
+                return "vnd.android.cursor.dir" + "/" + ExpensesContract.AUTHORITY + "/" + ExpensesContract.PATH_EXPENSES;
+            case SPECIFIC_EXPENSE:
+                return "vnd.android.cursor.item" + "/" + ExpensesContract.AUTHORITY + "/" + ExpensesContract.PATH_EXPENSES;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -141,8 +137,8 @@ public class CategoriesContentProvider extends ContentProvider {
 
     private static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(CategoriesContract.AUTHORITY, CategoriesContract.PATH_CATEGORIES, CATEGORIES);
-        uriMatcher.addURI(CategoriesContract.AUTHORITY, CategoriesContract.PATH_CATEGORIES + "/#", SPECIFIC_CATEGORY);
+        uriMatcher.addURI(ExpensesContract.AUTHORITY, ExpensesContract.PATH_EXPENSES, EXPENSES);
+        uriMatcher.addURI(ExpensesContract.AUTHORITY, ExpensesContract.PATH_EXPENSES + "/#", SPECIFIC_EXPENSE);
         return uriMatcher;
     }
 

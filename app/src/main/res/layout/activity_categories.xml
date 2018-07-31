@@ -43,4 +43,6 @@
         android:layout_height="wrap_content"
         android:text="ADD" />
 
+    <!--TODO disableat kad je edittext prazan-->
+
 </LinearLayout>

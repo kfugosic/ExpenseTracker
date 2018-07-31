@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="rectangle_dim">30dp</dimen>
+    <dimen name="new_expense_elements_width">200dp</dimen>
+    <dimen name="new_expense_elements_height">100dp</dimen>
+</resources>

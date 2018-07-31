@@ -5,7 +5,7 @@ import android.provider.BaseColumns;
 
 public class CategoriesContract {
 
-    public static final String AUTHORITY = "com.kfugosic.expensetracker";
+    public static final String AUTHORITY = "com.kfugosic.expensetracker.data.categories";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     public static final String PATH_CATEGORIES = "categories";
 
