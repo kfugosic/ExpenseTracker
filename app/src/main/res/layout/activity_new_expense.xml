@@ -24,15 +24,20 @@
 
     <ImageButton
         android:id="@+id/btn_camera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/new_expense_elements_width"
+        android:layout_height="@dimen/new_expense_elements_height"
         android:background="@drawable/ic_photo_camera_gray_24dp"/>
 
     <ImageButton
         android:id="@+id/btn_gallery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/new_expense_elements_width"
+        android:layout_height="@dimen/new_expense_elements_height"
         android:background="@drawable/ic_photo_gray_24dp"/>
+
+    <ImageView
+        android:id="@+id/iv_imagepreview"
+        android:layout_width="@dimen/new_expense_elements_width"
+        android:layout_height="@dimen/new_expense_elements_height" />
 
     <Button
         android:id="@+id/btn_add"

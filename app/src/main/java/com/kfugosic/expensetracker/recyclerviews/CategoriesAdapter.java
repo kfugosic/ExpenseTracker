@@ -52,7 +52,6 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         String name = mCursor.getString(nameIndex);
         Integer color = mCursor.getInt(colorIndex);
 
-        //Set values
         holder.itemView.setTag(id);
         holder.setCategoryName(name);
         holder.setCategoryColor(color);
@@ -69,7 +68,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
     }
 
     @Override
-    public void onDataLoaded(Cursor c) {
+    public void onDataLoaded(int id, Cursor c) {
         if (mCursor == c || c == null) {
             return;
         }

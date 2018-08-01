@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -56,8 +58,18 @@ public class CategoriesActivity extends AppCompatActivity {
         mCategoriesRecyclerView.setAdapter(mAdapter);
 
         mLoader = new DataLoader(this, mAdapter, CategoriesContract.CategoriesEntry.CONTENT_URI);
-        getSupportLoaderManager().initLoader(CATEGORIES_LOADER_ID, null, mLoader);
+        initOrRestartLoader();
+    }
 
+    private void initOrRestartLoader() {
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<String> loader = loaderManager.getLoader(CATEGORIES_LOADER_ID);
+
+        if (loader == null) {
+            loaderManager.initLoader(CATEGORIES_LOADER_ID, null, mLoader);
+        } else {
+            loaderManager.restartLoader(CATEGORIES_LOADER_ID, null, mLoader);
+        }
     }
 
     @OnClick(R.id.color_picker)

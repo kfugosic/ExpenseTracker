@@ -23,6 +23,7 @@ public class DataLoader implements LoaderManager.LoaderCallbacks<Cursor> {
     private Uri mUri;
     private String mSelection;
     private String[] mSelectionArgs;
+    private boolean mCaching = true;
 
     public DataLoader(Context context, IDataLoaderListener listener, Uri uri) {
         mContext = new WeakReference<>(context);
@@ -38,6 +39,10 @@ public class DataLoader implements LoaderManager.LoaderCallbacks<Cursor> {
         mSelectionArgs = selectionArgs;
     }
 
+    public void setCachingEnabled(boolean caching) {
+        this.mCaching = caching;
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, final Bundle loaderArgs) {
 
@@ -48,7 +53,9 @@ public class DataLoader implements LoaderManager.LoaderCallbacks<Cursor> {
             // onStartLoading() is called when a loader first starts loading data
             @Override
             protected void onStartLoading() {
-                if (mData != null) {
+                Log.d(TAG, "onStartLoading: " + mSelection + mData);
+                if (mCaching && mData != null) {
+                    Log.d(TAG, "onStartLoading: "+mData.getCount());
                     deliverResult(mData);
                     return;
                 }
@@ -73,6 +80,7 @@ public class DataLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
             // deliverResult sends the result of the load, a Cursor, to the registered listener
             public void deliverResult(Cursor data) {
+                Log.d(TAG, "deliverResult: "+data.getCount());
                 mData = data;
                 super.deliverResult(data);
             }
@@ -82,12 +90,13 @@ public class DataLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mListener.onDataLoaded(data);
+        Log.d(TAG, "onLoadFinished: ");
+        mListener.onDataLoaded(loader.getId(), data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mListener.onDataLoaded(null);
+        // do nothing
     }
 
 }
