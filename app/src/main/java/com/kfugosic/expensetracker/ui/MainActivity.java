@@ -323,7 +323,6 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        MyBoolean = savedInstanceState.getBoolean("MyBoolean");
         Log.d("TAG123", "onRestoreInstanceState: ");
     }
 
