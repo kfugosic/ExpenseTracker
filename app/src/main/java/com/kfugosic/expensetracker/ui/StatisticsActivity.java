@@ -1,5 +1,6 @@
 package com.kfugosic.expensetracker.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -8,9 +9,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.kfugosic.expensetracker.R;
+import com.kfugosic.expensetracker.data.categories.CategoriesContract;
 import com.kfugosic.expensetracker.data.expenses.ExpensesContract;
 import com.kfugosic.expensetracker.loaders.DataLoader;
 import com.kfugosic.expensetracker.recyclerviews.ExpensesAdapter;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,7 +31,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private ExpensesAdapter mAdapter;
     private DataLoader mLoader;
-
+    private HashMap<Integer, Integer> mCategoryIdToColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +39,15 @@ public class StatisticsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_statistics);
 
         ButterKnife.bind(this);
+        Intent passedIntent = getIntent();
+        if(passedIntent != null) {
+            mCategoryIdToColor = (HashMap<Integer, Integer>) passedIntent.getSerializableExtra(MainActivity.IDTOCOLOR_MAP_KEY);
+        }
 
         mExpensesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mAdapter = new ExpensesAdapter(this, null);
+        mAdapter = new ExpensesAdapter(this, null, mCategoryIdToColor);
         mExpensesRecyclerView.setAdapter(mAdapter);
+        mExpensesRecyclerView.setHasFixedSize(true);
 
         mLoader = new DataLoader(this, mAdapter, ExpensesContract.ExpensesEntry.CONTENT_URI);
         initOrRestartLoader();

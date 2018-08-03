@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
@@ -56,6 +57,7 @@ public class CategoriesActivity extends AppCompatActivity {
         mCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mAdapter = new CategoriesAdapter(this, null);
         mCategoriesRecyclerView.setAdapter(mAdapter);
+        mCategoriesRecyclerView.setHasFixedSize(true);
 
         mLoader = new DataLoader(this, mAdapter, CategoriesContract.CategoriesEntry.CONTENT_URI);
         initOrRestartLoader();
@@ -100,6 +102,7 @@ public class CategoriesActivity extends AppCompatActivity {
         String name = mCategoryNameView.getText().toString();
         Integer color = ((ColorDrawable)mColorPickerView.getBackground()).getColor();
         if(TextUtils.isEmpty(name)){
+            Toast.makeText(this, "Please set category name.", Toast.LENGTH_SHORT).show();
             return;
         }
 

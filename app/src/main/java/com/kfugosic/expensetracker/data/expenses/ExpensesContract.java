@@ -18,6 +18,7 @@ public class ExpensesContract {
         public static final String TABLE_NAME = "expenses";
 
         public static final String COLUMN_AMOUNT = "amount";
+        public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_DATE = "date";
         public static final String COLUMN_CATEGORY = "category";
         public static final String COLUMN_PHOTO_LOCATION = "photo_location";

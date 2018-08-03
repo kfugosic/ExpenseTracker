@@ -17,6 +17,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,6 +30,7 @@ import com.kfugosic.expensetracker.data.categories.CategoriesContract;
 import com.kfugosic.expensetracker.data.expenses.ExpensesContract;
 import com.kfugosic.expensetracker.loaders.DataLoader;
 import com.kfugosic.expensetracker.loaders.IDataLoaderListener;
+import com.kfugosic.expensetracker.widget.ExpensesWidgetService;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -54,6 +56,8 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
 
     @BindView(R.id.et_amount)
     EditText mAmount;
+    @BindView(R.id.et_desc)
+    EditText mDescription;
     @BindView(R.id.btn_select_category)
     Button mBtnSelectCategory;
     @BindView(R.id. btn_camera)
@@ -186,10 +190,16 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
 
     @OnClick(R.id.btn_add)
     void onAddButtonClick() {
-        float amount = Float.valueOf(mAmount.getText().toString());
+        Editable editable = mAmount.getText();
+        if(editable == null || editable.toString().trim().isEmpty()) {
+            Toast.makeText(this, "Please set the amount.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        float amount = Float.valueOf(editable.toString());
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(ExpensesContract.ExpensesEntry.COLUMN_AMOUNT, amount);
+        contentValues.put(ExpensesContract.ExpensesEntry.COLUMN_DESCRIPTION, mDescription.getText().toString());
         contentValues.put(ExpensesContract.ExpensesEntry.COLUMN_CATEGORY, mSelectedCategory);
         contentValues.put(ExpensesContract.ExpensesEntry.COLUMN_DATE, new Date().getTime());
 
@@ -219,6 +229,7 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
         intent.putExtra(MainActivity.SHOULD_RESTART_KEY, true);
         setResult(RESULT_OK, intent);
 
+        ExpensesWidgetService.startActionUpdateExpensesTextviews(this);
         finish();
     }
 

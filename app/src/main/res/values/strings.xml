@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Expense Tracker</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="pref_income_key">income</string>
+    <string name="pref_income_title">Monthly income</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="appwidget_default_desc_today">Today\'s expenses</string>
+    <string name="appwidget_default_desc_week">This week\'s expenses</string>
+    <string name="appwidget_default_desc_month">This month\'s expenses</string>
+    <string name="appwidget_default_text">None</string>
+
 </resources>

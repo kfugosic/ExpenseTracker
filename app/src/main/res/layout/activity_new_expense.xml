@@ -1,49 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<ScrollView android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.NewExpenseActivity"
-    android:orientation="vertical">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <EditText
-        android:id="@+id/et_amount"
-        android:layout_width="@dimen/new_expense_elements_width"
-        android:layout_height="@dimen/new_expense_elements_height"
-        style="@style/TextAppearance.AppCompat.Large"
-        android:hint="Amount"
-        android:inputType="numberDecimal"/>
+    <LinearLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.NewExpenseActivity"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_select_category"
-        android:layout_width="@dimen/new_expense_elements_width"
-        android:layout_height="@dimen/new_expense_elements_height"
-        style="@style/TextAppearance.AppCompat.Large"
-        android:hint="Category"/>
+        <EditText
+            android:id="@+id/et_amount"
+            android:layout_width="@dimen/new_expense_elements_width"
+            android:layout_height="@dimen/new_expense_elements_height"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:hint="Amount"
+            android:inputType="numberDecimal"/>
 
-    <ImageButton
-        android:id="@+id/btn_camera"
-        android:layout_width="@dimen/new_expense_elements_width"
-        android:layout_height="@dimen/new_expense_elements_height"
-        android:background="@drawable/ic_photo_camera_gray_24dp"/>
+        <EditText
+            android:id="@+id/et_desc"
+            android:layout_width="@dimen/new_expense_elements_width"
+            android:layout_height="@dimen/new_expense_elements_height"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:hint="Description"
+            android:inputType="text"/>
 
-    <ImageButton
-        android:id="@+id/btn_gallery"
-        android:layout_width="@dimen/new_expense_elements_width"
-        android:layout_height="@dimen/new_expense_elements_height"
-        android:background="@drawable/ic_photo_gray_24dp"/>
+        <Button
+            android:id="@+id/btn_select_category"
+            android:layout_width="@dimen/new_expense_elements_width"
+            android:layout_height="@dimen/new_expense_elements_height"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:hint="Category"/>
 
-    <ImageView
-        android:id="@+id/iv_imagepreview"
-        android:layout_width="@dimen/new_expense_elements_width"
-        android:layout_height="@dimen/new_expense_elements_height" />
+        <ImageButton
+            android:id="@+id/btn_camera"
+            android:layout_width="@dimen/new_expense_elements_width"
+            android:layout_height="@dimen/new_expense_elements_height"
+            android:background="@drawable/ic_photo_camera_gray_24dp"/>
 
-    <Button
-        android:id="@+id/btn_add"
-        android:layout_width="@dimen/new_expense_elements_width"
-        android:layout_height="@dimen/new_expense_elements_height"
-        style="@style/TextAppearance.AppCompat.Large"
-        android:text="Add"/>
+        <ImageButton
+            android:id="@+id/btn_gallery"
+            android:layout_width="@dimen/new_expense_elements_width"
+            android:layout_height="@dimen/new_expense_elements_height"
+            android:background="@drawable/ic_photo_gray_24dp"/>
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/iv_imagepreview"
+            android:layout_width="@dimen/new_expense_elements_width"
+            android:layout_height="@dimen/new_expense_elements_height" />
+
+        <Button
+            android:id="@+id/btn_add"
+            android:layout_width="@dimen/new_expense_elements_width"
+            android:layout_height="@dimen/new_expense_elements_height"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:text="Add"/>
+
+    </LinearLayout>
+
+</ScrollView>

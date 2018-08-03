@@ -1,0 +1,75 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightBackground"
+    android:orientation="vertical"
+    android:padding="@dimen/widget_margin">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/widget_margin"
+        android:contentDescription="@string/appwidget_default_desc_today"
+        android:text="@string/appwidget_default_desc_today"
+        android:textColor="@color/black"
+        android:textSize="@dimen/appwidget_text_med" />
+
+    <TextView
+        android:id="@+id/appwidget_today"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/widget_margin"
+        android:contentDescription="@string/appwidget_default_desc_today"
+        android:text="@string/appwidget_default_text"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/appwidget_text_large"
+        android:textStyle="bold|italic" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/widget_margin"
+        android:contentDescription="@string/appwidget_default_desc_week"
+        android:text="@string/appwidget_default_desc_week"
+        android:textColor="@color/black"
+        android:textSize="@dimen/appwidget_text_med" />
+
+    <TextView
+        android:id="@+id/appwidget_week"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/widget_margin"
+        android:contentDescription="@string/appwidget_default_desc_week"
+        android:text="@string/appwidget_default_text"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/appwidget_text_large"
+        android:textStyle="bold|italic" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/widget_margin"
+        android:contentDescription="@string/appwidget_default_desc_month"
+        android:text="@string/appwidget_default_desc_month"
+        android:textColor="@color/black"
+        android:textSize="@dimen/appwidget_text_med" />
+
+    <TextView
+        android:id="@+id/appwidget_month"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/widget_margin"
+        android:contentDescription="@string/appwidget_default_desc_month"
+        android:text="@string/appwidget_default_text"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/appwidget_text_large"
+        android:textStyle="bold|italic" />
+
+</LinearLayout>

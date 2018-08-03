@@ -98,7 +98,7 @@ public class ExpensesContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
+    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
         final SQLiteDatabase db = mExpensesHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
         int tasksUpdated = 0;
@@ -110,6 +110,14 @@ public class ExpensesContentProvider extends ContentProvider {
                         contentValues,
                         "_id=?",
                         new String[]{id}
+                );
+                break;
+            case EXPENSES:
+                tasksUpdated = db.update(
+                        ExpensesContract.ExpensesEntry.TABLE_NAME,
+                        contentValues,
+                        selection,
+                        selectionArgs
                 );
                 break;
             default:

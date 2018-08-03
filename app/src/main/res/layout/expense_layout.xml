@@ -32,6 +32,16 @@
             app:layout_constraintStart_toEndOf="@+id/expense_category_color"
             tools:layout_editor_absoluteY="0dp" />
 
+        <TextView
+            android:id="@+id/expense_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="44dp"
+            app:layout_constraintEnd_toStartOf="@+id/expense_image"
+            app:layout_constraintStart_toEndOf="@+id/expense_amount"
+            tools:layout_editor_absoluteY="10dp" />
+
         <ImageView
             android:id="@+id/expense_image"
             android:layout_width="30dp"
@@ -51,6 +61,8 @@
             android:backgroundTint="@color/colorAccent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:layout_editor_absoluteY="0dp" />
+
+
 
     </android.support.constraint.ConstraintLayout>
 

@@ -1,7 +1,9 @@
 package com.kfugosic.expensetracker.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -39,10 +41,13 @@ import com.kfugosic.expensetracker.data.categories.CategoriesContract;
 import com.kfugosic.expensetracker.data.expenses.ExpensesContract;
 import com.kfugosic.expensetracker.loaders.DataLoader;
 import com.kfugosic.expensetracker.loaders.IDataLoaderListener;
+import com.kfugosic.expensetracker.util.CalendarUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -50,14 +55,16 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class MainActivity extends AppCompatActivity implements IDataLoaderListener {
+public class MainActivity extends AppCompatActivity implements IDataLoaderListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
+    public static final String IDTOCOLOR_MAP_KEY = "idtocolor";
     public static final String DEFAULT_SHOW_ADS_KEY = "show_ads";
     public static final boolean DEFAULT_SHOW_ADS_VALUE = true;
     public static final String SHOULD_RESTART_KEY = "should_restart";
     private static final int EXPENSE_LOADER_TODAY = 202;
     private static final int EXPENSE_LOADER_MONTH = 203;
     private static final int REQUEST_CODE_ADD = 3;
+    private static final Integer GREY_COLOR_AS_INT = -7829368;
 
 
     @BindView(R.id.adView)
@@ -70,12 +77,16 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     TextView mAmountToday;
     @BindView(R.id.tv_amount_month)
     TextView mAmountMonth;
+    @BindView(R.id.tv_income_minus_spent)
+    TextView mIncomeSpentDifference;
     @BindView(R.id.piechart)
     PieChart mPieChart;
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private SparseArray<String> mCategoryIdToName;
+    private LinkedHashMap<Integer, Integer> mCategoryIdToColor;
     private boolean MyBoolean = false;
+    private float mMontlyExpenses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
         }
 
         initOrRestartLoader();
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+
     }
 
     public void initOrRestartLoader() {
@@ -107,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
         }
 
         String selection = ExpensesContract.ExpensesEntry.COLUMN_DATE + ">=?";
-        String[] selectionArgs = new String[]{String.valueOf(getTodaysDateMillis())};
+        String[] selectionArgs = new String[]{String.valueOf(CalendarUtils.getTodaysDateMillis())};
         DataLoader expensesLoader = new DataLoader(this, this, ExpensesContract.ExpensesEntry.CONTENT_URI, selection, selectionArgs);
 
         loader = loaderManager.getLoader(EXPENSE_LOADER_TODAY);
@@ -121,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     public void initOrRestartMonthLoader() {
         LoaderManager loaderManager = getSupportLoaderManager();
         String selection = ExpensesContract.ExpensesEntry.COLUMN_DATE + ">=?";
-        String[] selectionArgs = new String[]{String.valueOf(getThisMonthMillis())};
+        String[] selectionArgs = new String[]{String.valueOf(CalendarUtils.getThisMonthMillis())};
         DataLoader expensesLoader = new DataLoader(this, this, ExpensesContract.ExpensesEntry.CONTENT_URI, selection, selectionArgs);
         Loader<String> loader = loaderManager.getLoader(EXPENSE_LOADER_MONTH);
         if (loader == null) {
@@ -132,24 +145,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     }
 
         // https://stackoverflow.com/questions/38754490/get-current-day-in-milliseconds-in-java
-    private long getTodaysDateMillis() {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int date = cal.get(Calendar.DATE);
-        cal.clear();
-        cal.set(year, month, date);
-        return cal.getTimeInMillis();
-    }
 
-    private long getThisMonthMillis() {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        cal.clear();
-        cal.set(year, month, 1);
-        return cal.getTimeInMillis();
-    }
 
     @Override
     public void onDataLoaded(int id, Cursor cursor) {
@@ -176,15 +172,21 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
                 total += amount;
             }
             mAmountMonth.setText("$" + total);
+            mMontlyExpenses = total;
+            updateIncomeSpentDifferenceTV();
             fillPieChart(amountByCategory);
         } else if (id == CategoriesActivity.CATEGORIES_LOADER_ID) {
             initOrRestartMonthLoader();
             int idIndex = cursor.getColumnIndex("_id");
+            int colorIndex = cursor.getColumnIndex(CategoriesContract.CategoriesEntry.COLUMN_COLOR);
             int nameIndex = cursor.getColumnIndex(CategoriesContract.CategoriesEntry.COLUMN_NAME);
             cursor.moveToPosition(-1);
             mCategoryIdToName = new SparseArray<>();
+            mCategoryIdToColor  = new LinkedHashMap<>();
+            mCategoryIdToColor.put(-1, GREY_COLOR_AS_INT);
             while (cursor.moveToNext()) {
                 mCategoryIdToName.append(cursor.getInt(idIndex), cursor.getString(nameIndex));
+                mCategoryIdToColor.put(cursor.getInt(idIndex), cursor.getInt(colorIndex));
             }
         }
     }
@@ -207,7 +209,13 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
         //data.setValueFormatter(new PercentFormatter());
         Description desc = new Description();
         desc.setText("Expenses by category for this month");
-        dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        List<Integer> colors = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry: mCategoryIdToColor.entrySet()) {
+            if(amountByCategory.get(entry.getKey(), 0f) > 1E-10 ){
+                colors.add(entry.getValue());
+            }
+        }
+        dataSet.setColors(colors);
         mPieChart.setDescription(desc);
         mPieChart.setData(data);
         mPieChart.invalidate();
@@ -217,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     protected void onDestroy() {
         super.onDestroy();
         mAdView.destroy();
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -259,7 +268,9 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
 
     @OnClick(R.id.btn_statistics)
     void onStatisticsButtonClick() {
-        startActivity(new Intent(this, StatisticsActivity.class));
+        Intent intent = new Intent(this, StatisticsActivity.class);
+        intent.putExtra(IDTOCOLOR_MAP_KEY, mCategoryIdToColor);
+        startActivity(intent);
     }
 
     ///
@@ -354,6 +365,31 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
             mAdView.setVisibility(View.VISIBLE);
         } else {
             mAdView.setVisibility(View.GONE);
+        }
+    }
+
+
+    //
+    // Preferences
+    //
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if(key.equals(getString(R.string.pref_income_key))) {
+            updateIncomeSpentDifferenceTV();
+        }
+    }
+
+    private void updateIncomeSpentDifferenceTV() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        float income = Float.valueOf(sharedPreferences.getString("income", "0"));
+
+        if(income < 1E-10) {
+            mIncomeSpentDifference.setVisibility(View.GONE);
+        } else {
+            mIncomeSpentDifference.setVisibility(View.VISIBLE);
+            mIncomeSpentDifference.setText("$"+(income-mMontlyExpenses));
         }
     }
 

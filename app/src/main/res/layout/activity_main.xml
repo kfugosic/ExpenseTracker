@@ -37,6 +37,15 @@
         android:textSize="20sp"
         android:text="$20"/>
 
+    <TextView
+        android:id="@+id/tv_income_minus_spent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="16dp"
+        android:textSize="20sp"
+        android:text="$20"/>
+
     <Button
         android:id="@+id/btn_add"
         android:layout_width="match_parent"

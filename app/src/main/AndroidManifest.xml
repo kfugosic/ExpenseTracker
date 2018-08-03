@@ -5,7 +5,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
 
     <application
         android:allowBackup="true"
@@ -31,27 +33,25 @@
         </activity>
         <activity
             android:name=".ui.SettingsActivity"
-            android:parentActivityName=".ui.MainActivity"></activity>
+            android:parentActivityName=".ui.MainActivity" />
         <activity
             android:name=".ui.CategoriesActivity"
-            android:parentActivityName=".ui.SettingsActivity"></activity>
-
-        <activity android:name=".ui.NewExpenseActivity"
-            android:parentActivityName=".ui.MainActivity"></activity>
-
-        <activity android:name=".ui.StatisticsActivity"
-            android:parentActivityName=".ui.MainActivity"></activity>
+            android:parentActivityName=".ui.SettingsActivity" />
+        <activity
+            android:name=".ui.NewExpenseActivity"
+            android:parentActivityName=".ui.MainActivity" />
+        <activity
+            android:name=".ui.StatisticsActivity"
+            android:parentActivityName=".ui.MainActivity" />
 
         <provider
             android:name=".data.categories.CategoriesContentProvider"
-                    android:authorities="com.kfugosic.expensetracker.data.categories"
+            android:authorities="com.kfugosic.expensetracker.data.categories"
             android:exported="false" />
-
         <provider
             android:name=".data.expenses.ExpensesContentProvider"
             android:authorities="com.kfugosic.expensetracker.data.expenses"
             android:exported="false" />
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.kfugosic.expensetracker.data.images"
@@ -59,8 +59,22 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
+
+        <receiver android:name=".widget.ExpensesWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/expenses_widget_provider_info" />
+        </receiver>
+
+        <service
+            android:name=".widget.ExpensesWidgetService"
+            android:exported="false" />
 
     </application>
 

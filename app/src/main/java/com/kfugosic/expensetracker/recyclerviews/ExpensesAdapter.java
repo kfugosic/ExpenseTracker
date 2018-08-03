@@ -10,6 +10,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,9 +23,11 @@ import com.kfugosic.expensetracker.R;
 import com.kfugosic.expensetracker.data.expenses.ExpensesContract;
 import com.kfugosic.expensetracker.loaders.IDataLoaderListener;
 import com.kfugosic.expensetracker.ui.StatisticsActivity;
+import com.kfugosic.expensetracker.widget.ExpensesWidgetService;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,10 +37,12 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
 
     private Context mContext;
     private Cursor mCursor;
+    private HashMap<Integer, Integer> mCategoryIdToColor;
 
-    public ExpensesAdapter(Context context, Cursor c) {
+    public ExpensesAdapter(Context context, Cursor c, HashMap<Integer, Integer> idToColorMap) {
         mContext = context;
         mCursor = c;
+        mCategoryIdToColor = idToColorMap;
     }
 
     @NonNull
@@ -52,14 +57,16 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
     public void onBindViewHolder(@NonNull ExpensesViewHolder holder, int position) {
         int idIndex = mCursor.getColumnIndex(ExpensesContract.ExpensesEntry._ID);
         int amountIndex = mCursor.getColumnIndex(ExpensesContract.ExpensesEntry.COLUMN_AMOUNT);
+        int descIndex = mCursor.getColumnIndex(ExpensesContract.ExpensesEntry.COLUMN_DESCRIPTION);
         int categoryIndex = mCursor.getColumnIndex(ExpensesContract.ExpensesEntry.COLUMN_CATEGORY);
         int dateIndex = mCursor.getColumnIndex(ExpensesContract.ExpensesEntry.COLUMN_DATE);
         int photoIndex = mCursor.getColumnIndex(ExpensesContract.ExpensesEntry.COLUMN_PHOTO_LOCATION);
 
         mCursor.moveToPosition(position);
-
+        Log.d("TAG123345", "onBindViewHolder: " + mCursor.getCount());
         final int id = mCursor.getInt(idIndex);
         float amount = mCursor.getFloat(amountIndex);
+        String desc = mCursor.getString(descIndex);
         int categoryId = mCursor.getInt(categoryIndex);
         long date = mCursor.getLong(dateIndex);
         Uri photoUri = null;
@@ -68,7 +75,11 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
         }
 
         holder.itemView.setTag(id);
-        holder.setValues(amount, 0, photoUri);
+        int color = 0;
+        if(mCategoryIdToColor.containsKey(categoryId)) {
+            color = mCategoryIdToColor.get(categoryId);
+        }
+        holder.setValues(amount, desc, color, photoUri);
         Log.d("TAG123", "onBindViewHolder: " + id +  " "  + amount + " " + categoryId + " " + date + " " +photoUri);
 
     }
@@ -94,6 +105,8 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
 
         @BindView(R.id.expense_amount)
         TextView mExpenseAmount;
+        @BindView(R.id.expense_desc)
+        TextView mExpenseDescription;
         @BindView(R.id.expense_category_color)
         View mExpenseCategoryColor;
         @BindView(R.id.expense_delete)
@@ -108,17 +121,22 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
 
         }
 
-        public void setValues(float amount, int color, Uri uri) {
+        public void setValues(float amount, String desc, int color, Uri uri) {
             mExpenseAmount.setText(String.format("%.2f", amount));
+            if( !TextUtils.isEmpty(desc)) {
+                mExpenseDescription.setText(desc);
+            }
             mExpenseCategoryColor.setBackgroundColor(color);
             InputStream imageStream = null;
 
             if(uri != null) {
                 try {
                     imageStream = mContext.getContentResolver().openInputStream(uri);
-                    Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                    mExpenseImage.setImageBitmap(selectedImage);
-                } catch (FileNotFoundException e) {
+                    //Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    //mExpenseImage.setImageBitmap(selectedImage);
+                    imageStream.close();
+                    mExpenseCategoryColor.setBackgroundColor(color);
+                } catch (java.io.IOException e) {
                     e.printStackTrace();
                     Toast.makeText(mContext, "Error loading image", Toast.LENGTH_SHORT).show();
                 }
@@ -142,6 +160,7 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
                         int res = mContext.getContentResolver().delete(ExpensesContract.ExpensesEntry.CONTENT_URI, "_id=?", selectionArgs);
                         StatisticsActivity activity = (StatisticsActivity) mContext;
                         activity.getSupportLoaderManager().restartLoader(StatisticsActivity.EXPENSES_LOADER_ID, null, activity.getLoader());
+                        ExpensesWidgetService.startActionUpdateExpensesTextviews(mContext);
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {

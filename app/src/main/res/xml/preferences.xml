@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="daily_reminder"
-        android:summaryOn="You will recieve reminder every afternoon"
-        android:title="Daily reminder"
+    <!--<CheckBoxPreference-->
+        <!--android:defaultValue="false"-->
+        <!--android:key="daily_reminder"-->
+        <!--android:summaryOn="You will recieve reminder every afternoon"-->
+        <!--android:title="Daily reminder"-->
+        <!--/>-->
+    <EditTextPreference
+        android:id="@+id/edit_text_pref_income"
+        android:defaultValue="0"
+        android:key="@string/pref_income_key"
+        android:title="@string/pref_income_title"
+        android:inputType="numberDecimal"
+        android:digits="0123456789"
         />
 
     <Preference

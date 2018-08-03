@@ -20,6 +20,7 @@ public class ExpensesHelper extends SQLiteOpenHelper {
         final String CREATE_TABLE = "CREATE TABLE " + ExpensesEntry.TABLE_NAME + " (" +
                 ExpensesEntry._ID + " INTEGER PRIMARY KEY, " +
                 ExpensesEntry.COLUMN_AMOUNT + " REAL NOT NULL, " +
+                ExpensesEntry.COLUMN_DESCRIPTION + " TEXT, " +
                 ExpensesEntry.COLUMN_DATE + " INT NOT NULL, " +
                 ExpensesEntry.COLUMN_CATEGORY + " INT, " +
                 ExpensesEntry.COLUMN_PHOTO_LOCATION + " TEXT);";

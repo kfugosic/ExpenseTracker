@@ -1,5 +1,6 @@
 package com.kfugosic.expensetracker.recyclerviews;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.kfugosic.expensetracker.R;
 import com.kfugosic.expensetracker.data.categories.CategoriesContract;
+import com.kfugosic.expensetracker.data.expenses.ExpensesContract;
 import com.kfugosic.expensetracker.loaders.IDataLoaderListener;
 import com.kfugosic.expensetracker.ui.CategoriesActivity;
 
@@ -121,6 +123,13 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
                         String[] selectionArgs = new String[]{String.valueOf(itemView.getTag())};
                         int res = mContext.getContentResolver().delete(CategoriesContract.CategoriesEntry.CONTENT_URI, "_id=?", selectionArgs);
                         CategoriesActivity activity = (CategoriesActivity) mContext;
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(ExpensesContract.ExpensesEntry.COLUMN_CATEGORY, -1);
+                        res = mContext.getContentResolver().update(
+                                ExpensesContract.ExpensesEntry.CONTENT_URI,
+                                contentValues,
+                                ExpensesContract.ExpensesEntry.COLUMN_CATEGORY+"=?",
+                                selectionArgs);
                         activity.getSupportLoaderManager().restartLoader(CategoriesActivity.CATEGORIES_LOADER_ID, null, activity.getLoader());
                     }
                 })
