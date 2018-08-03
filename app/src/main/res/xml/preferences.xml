@@ -7,6 +7,7 @@
         <!--android:summaryOn="You will recieve reminder every afternoon"-->
         <!--android:title="Daily reminder"-->
         <!--/>-->
+
     <EditTextPreference
         android:id="@+id/edit_text_pref_income"
         android:defaultValue="0"
@@ -17,9 +18,9 @@
         />
 
     <Preference
-        android:key="renameCourses"
-        android:title="Test"
-        android:summary="test">
+        android:key="editCategories"
+        android:title="@string/edit_categories"
+        android:summary="@string/edit_categories_summary">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.kfugosic.expensetracker"

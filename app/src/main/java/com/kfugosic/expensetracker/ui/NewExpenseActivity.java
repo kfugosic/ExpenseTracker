@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.FileProvider;
@@ -19,10 +20,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kfugosic.expensetracker.R;
@@ -30,6 +33,7 @@ import com.kfugosic.expensetracker.data.categories.CategoriesContract;
 import com.kfugosic.expensetracker.data.expenses.ExpensesContract;
 import com.kfugosic.expensetracker.loaders.DataLoader;
 import com.kfugosic.expensetracker.loaders.IDataLoaderListener;
+import com.kfugosic.expensetracker.util.ToolbarUtil;
 import com.kfugosic.expensetracker.widget.ExpensesWidgetService;
 
 import java.io.BufferedOutputStream;
@@ -66,6 +70,8 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
     ImageButton mGalleryBtn;
     @BindView(R.id.iv_imagepreview)
     ImageView mImageView;
+    @BindView(R.id.tv_selected_image)
+    TextView mImageTextView;
 
     private DataLoader mLoader;
     private Cursor mCursor;
@@ -80,6 +86,14 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_expense);
+
+        ToolbarUtil.setupToolbar(this);
+        findViewById(R.id.action_up).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         ButterKnife.bind(this);
 
@@ -107,6 +121,7 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageUri);
                 Log.d(TAG, "onActivityResult2: "+bitmap.getHeight()+" "+ bitmap.getWidth());
                 mImageView.setImageBitmap(bitmap);
+                mImageTextView.setText(R.string.default_image_from_camera_textview);
                 mSelectedImage = bitmap;
                 getContentResolver().delete(mImageUri, null, null);
             } catch (IOException e) {
@@ -118,8 +133,27 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
                 Uri imageUri = data.getData();
                 InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                Log.d(TAG, "onActivityResult3: "+selectedImage.getHeight()+" "+ selectedImage.getWidth());
+                Log.d(TAG, "onActivityResult3: "+selectedImage.getHeight()+" "+ selectedImage.getWidth()+" "+imageUri.getPath());
                 mImageView.setImageBitmap(selectedImage);
+                String fileName = null;
+                String uriString = imageUri.toString();
+                // https://stackoverflow.com/questions/24322738/android-how-to-get-selected-file-name-from-the-document
+                if (uriString.startsWith("content://")) {
+                    Log.d(TAG, "onActivityResult: 11");
+                    Cursor cursor = null;
+                    try {
+                        cursor = getContentResolver().query(imageUri, null, null, null, null);
+                        if (cursor != null && cursor.moveToFirst()) {
+                            fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+                } else if (uriString.startsWith("file://")) {
+                    Log.d(TAG, "onActivityResult: 22");
+                    fileName = new File(uriString).getName();
+                }
+                mImageTextView.setText(fileName);
                 mSelectedImage = selectedImage;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

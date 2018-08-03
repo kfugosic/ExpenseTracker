@@ -7,12 +7,14 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.kfugosic.expensetracker.R;
 import com.kfugosic.expensetracker.data.categories.CategoriesContract;
 import com.kfugosic.expensetracker.data.expenses.ExpensesContract;
 import com.kfugosic.expensetracker.loaders.DataLoader;
 import com.kfugosic.expensetracker.recyclerviews.ExpensesAdapter;
+import com.kfugosic.expensetracker.util.ToolbarUtil;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -34,9 +36,17 @@ public class StatisticsActivity extends AppCompatActivity {
     private HashMap<Integer, Integer> mCategoryIdToColor;
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
+        ToolbarUtil.setupToolbar(this);
+        findViewById(R.id.action_up).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         ButterKnife.bind(this);
         Intent passedIntent = getIntent();

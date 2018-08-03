@@ -16,17 +16,13 @@ import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -42,12 +38,13 @@ import com.kfugosic.expensetracker.data.expenses.ExpensesContract;
 import com.kfugosic.expensetracker.loaders.DataLoader;
 import com.kfugosic.expensetracker.loaders.IDataLoaderListener;
 import com.kfugosic.expensetracker.util.CalendarUtils;
+import com.kfugosic.expensetracker.util.ToolbarUtil;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -61,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     public static final String DEFAULT_SHOW_ADS_KEY = "show_ads";
     public static final boolean DEFAULT_SHOW_ADS_VALUE = true;
     public static final String SHOULD_RESTART_KEY = "should_restart";
-    private static final int EXPENSE_LOADER_TODAY = 202;
     private static final int EXPENSE_LOADER_MONTH = 203;
     private static final int REQUEST_CODE_ADD = 3;
     private static final Integer GREY_COLOR_AS_INT = -7829368;
@@ -69,16 +65,16 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
 
     @BindView(R.id.adView)
     AdView mAdView;
-    @BindView(R.id.btn_add)
-    Button mAddButton;
-    @BindView(R.id.test)
-    View mExpandable;
     @BindView(R.id.tv_amount_today)
     TextView mAmountToday;
+    @BindView(R.id.tv_amount_week)
+    TextView mAmountWeek;
     @BindView(R.id.tv_amount_month)
     TextView mAmountMonth;
     @BindView(R.id.tv_income_minus_spent)
     TextView mIncomeSpentDifference;
+    @BindView(R.id.tv_balance_desc)
+    TextView mIncomeSpenteDiffDescription;
     @BindView(R.id.piechart)
     PieChart mPieChart;
 
@@ -92,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ToolbarUtil.setupToolbar(this);
 
         ButterKnife.bind(this);
 
@@ -103,12 +100,13 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
             setupAds();
         }
 
-        initOrRestartLoader();
+        initOrRestartCategoriesLoader();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
     }
 
-    public void initOrRestartLoader() {
+
+    public void initOrRestartCategoriesLoader() {
         LoaderManager loaderManager = getSupportLoaderManager();
 
         DataLoader categoriesLoader = new DataLoader(this, this, CategoriesContract.CategoriesEntry.CONTENT_URI);
@@ -123,12 +121,6 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
         String[] selectionArgs = new String[]{String.valueOf(CalendarUtils.getTodaysDateMillis())};
         DataLoader expensesLoader = new DataLoader(this, this, ExpensesContract.ExpensesEntry.CONTENT_URI, selection, selectionArgs);
 
-        loader = loaderManager.getLoader(EXPENSE_LOADER_TODAY);
-        if (loader == null) {
-            loaderManager.initLoader(EXPENSE_LOADER_TODAY, null, expensesLoader);
-        } else {
-            loaderManager.restartLoader(EXPENSE_LOADER_TODAY, null, expensesLoader);
-        }
     }
 
     public void initOrRestartMonthLoader() {
@@ -151,28 +143,42 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     public void onDataLoaded(int id, Cursor cursor) {
         Log.d("TAG123", "onDataLoaded: " + id+" "+cursor.getCount());
 
-        float total = 0.0f;
+        float thisDay = 0.0f;
+        float thisWeek = 0.0f;
+        float thisMonth = 0.0f;
         int amountIndex = cursor.getColumnIndex(ExpensesContract.ExpensesEntry.COLUMN_AMOUNT);
+        int dateIndex = cursor.getColumnIndex(ExpensesContract.ExpensesEntry.COLUMN_DATE);
         int categoryIndex = cursor.getColumnIndex(ExpensesContract.ExpensesEntry.COLUMN_CATEGORY);
-        if (id == EXPENSE_LOADER_TODAY) {
-            cursor.moveToPosition(-1);
-            while (cursor.moveToNext()) {
-                total += cursor.getFloat(amountIndex);
+        if (id == EXPENSE_LOADER_MONTH) {
+            if(cursor == null || cursor.getCount() <= 0) {
+                return;
             }
-            mAmountToday.setText("$" + total);
-        } else if (id == EXPENSE_LOADER_MONTH) {
             cursor.moveToPosition(-1);
-            //Map<Integer, Float> amountByCategory = new HashMap<>();
             SparseArray<Float> amountByCategory = new SparseArray<>();
+            long weekStartMillis = CalendarUtils.getThisWeekMillis();
+            long currDayMillis = CalendarUtils.getTodaysDateMillis();
             while (cursor.moveToNext()) {
                 int category = cursor.getInt(categoryIndex);
                 float amount = cursor.getFloat(amountIndex);
                 float old = amountByCategory.get(category, 0f);
+                long date = cursor.getLong(dateIndex);
+
                 amountByCategory.append(category, old + amount);
-                total += amount;
+                thisMonth += amount;
+                if(date >= currDayMillis) {
+                    thisDay += amount;
+                    thisWeek += amount;
+                    continue;
+                }
+                if(date >= weekStartMillis); {
+                    thisWeek += amount;
+                }
             }
-            mAmountMonth.setText("$" + total);
-            mMontlyExpenses = total;
+            Log.d("TAG1234", String.format("onDataLoaded: %f %f %f", thisDay, thisWeek, thisMonth));
+            mAmountToday.setText(String.format(Locale.ENGLISH, "$%.2f", thisDay));
+            mAmountWeek.setText(String.format(Locale.ENGLISH, "$%.2f", thisWeek));
+            mAmountMonth.setText(String.format(Locale.ENGLISH, "$%.2f", thisMonth));
+            mMontlyExpenses = thisMonth;
             updateIncomeSpentDifferenceTV();
             fillPieChart(amountByCategory);
         } else if (id == CategoriesActivity.CATEGORIES_LOADER_ID) {
@@ -208,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
         PieData data = new PieData(dataSet);
         //data.setValueFormatter(new PercentFormatter());
         Description desc = new Description();
-        desc.setText("Expenses by category for this month");
+        desc.setText("Monthly expenses");
         List<Integer> colors = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry: mCategoryIdToColor.entrySet()) {
             if(amountByCategory.get(entry.getKey(), 0f) > 1E-10 ){
@@ -249,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
                     boolean res = data.getBooleanExtra(SHOULD_RESTART_KEY, false);
                     Log.d("TAG123", "onActivityResult: "+res);
                     if (res) {
-                        initOrRestartLoader();
+                        initOrRestartCategoriesLoader();
                     }
                     break;
                 }
@@ -261,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     //
     //
 
-    @OnClick(R.id.btn_add)
+    @OnClick(R.id.fab_add)
     void onAddButtonClick() {
         startActivityForResult(new Intent(this, NewExpenseActivity.class), REQUEST_CODE_ADD);
     }
@@ -387,9 +393,11 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
 
         if(income < 1E-10) {
             mIncomeSpentDifference.setVisibility(View.GONE);
+            mIncomeSpenteDiffDescription.setVisibility(View.GONE);
         } else {
             mIncomeSpentDifference.setVisibility(View.VISIBLE);
-            mIncomeSpentDifference.setText("$"+(income-mMontlyExpenses));
+            mIncomeSpenteDiffDescription.setVisibility(View.VISIBLE);
+            mIncomeSpentDifference.setText(String.format(Locale.ENGLISH, "$%.2f", income-mMontlyExpenses));
         }
     }
 

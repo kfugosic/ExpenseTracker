@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -23,10 +24,12 @@ import com.kfugosic.expensetracker.R;
 import com.kfugosic.expensetracker.data.categories.CategoriesContract;
 import com.kfugosic.expensetracker.loaders.DataLoader;
 import com.kfugosic.expensetracker.recyclerviews.CategoriesAdapter;
+import com.kfugosic.expensetracker.util.ToolbarUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 
 public class CategoriesActivity extends AppCompatActivity {
 
@@ -51,6 +54,13 @@ public class CategoriesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categories);
+        ToolbarUtil.setupToolbar(this);
+        findViewById(R.id.action_up).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         ButterKnife.bind(this);
 
@@ -71,6 +81,15 @@ public class CategoriesActivity extends AppCompatActivity {
             loaderManager.initLoader(CATEGORIES_LOADER_ID, null, mLoader);
         } else {
             loaderManager.restartLoader(CATEGORIES_LOADER_ID, null, mLoader);
+        }
+    }
+
+    @OnTextChanged(R.id.et_category_name)
+    protected void handleTextChange(Editable editable) {
+        if(editable == null || editable.toString().trim().isEmpty()) {
+            mAddButton.setEnabled(false);
+        } else {
+            mAddButton.setEnabled(true);
         }
     }
 

@@ -27,20 +27,22 @@
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_margin="15dp"
-            android:layout_marginStart="44dp"
             android:textColor="@android:color/primary_text_light"
             app:layout_constraintStart_toEndOf="@+id/expense_category_color"
             tools:layout_editor_absoluteY="0dp" />
 
         <TextView
             android:id="@+id/expense_desc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="44dp"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:text="AAAAAAAAAAAAAAAAAAAAAA"
+            android:layout_marginStart="15dp"
+            tools:layout_editor_absoluteY="0dp"
             app:layout_constraintEnd_toStartOf="@+id/expense_image"
             app:layout_constraintStart_toEndOf="@+id/expense_amount"
-            tools:layout_editor_absoluteY="10dp" />
+            android:ellipsize="end"
+            android:maxLines="1" />
 
         <ImageView
             android:id="@+id/expense_image"
@@ -57,10 +59,8 @@
             android:layout_gravity="end"
             android:layout_margin="15dp"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/ic_delete_gray_24dp"
-            android:backgroundTint="@color/colorAccent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:layout_editor_absoluteY="0dp" />
+            android:background="@drawable/ic_delete_accent_24dp"
+            app:layout_constraintEnd_toEndOf="parent" />
 
 
 
