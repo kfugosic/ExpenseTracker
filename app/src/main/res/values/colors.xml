@@ -7,5 +7,6 @@
     <color name="black">#000000</color>
     <color name="light_gray">#c7c7c7</color>
     <color name="lightBackground">#f9ffbc</color>
-
+    <color name="dark_red">#6c1c1b</color>
+    <color name="dirty_yellow">#83811f</color>
 </resources>

@@ -8,6 +8,7 @@ public class CalendarUtils {
      * Returns current date in milliseconds
      * @return current date in milliseconds
      */
+    // https://stackoverflow.com/questions/38754490/get-current-day-in-milliseconds-in-java
     public static long getTodaysDateMillis() {
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);

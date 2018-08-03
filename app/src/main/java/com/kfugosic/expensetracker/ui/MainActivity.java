@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -62,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     private static final int REQUEST_CODE_ADD = 3;
     private static final Integer GREY_COLOR_AS_INT = -7829368;
 
-
     @BindView(R.id.adView)
     AdView mAdView;
     @BindView(R.id.tv_amount_today)
@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private SparseArray<String> mCategoryIdToName;
     private LinkedHashMap<Integer, Integer> mCategoryIdToColor;
-    private boolean MyBoolean = false;
     private float mMontlyExpenses;
 
     @Override
@@ -135,9 +134,6 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
             loaderManager.restartLoader(EXPENSE_LOADER_MONTH, null, expensesLoader);
         }
     }
-
-        // https://stackoverflow.com/questions/38754490/get-current-day-in-milliseconds-in-java
-
 
     @Override
     public void onDataLoaded(int id, Cursor cursor) {
@@ -397,7 +393,15 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
         } else {
             mIncomeSpentDifference.setVisibility(View.VISIBLE);
             mIncomeSpenteDiffDescription.setVisibility(View.VISIBLE);
-            mIncomeSpentDifference.setText(String.format(Locale.ENGLISH, "$%.2f", income-mMontlyExpenses));
+            float balance = income-mMontlyExpenses;
+            mIncomeSpentDifference.setText(String.format(Locale.ENGLISH, "$%.2f", balance));
+            if(Math.abs(balance) < 1E-10) {
+                mIncomeSpentDifference.setTextColor(ContextCompat.getColor(this, R.color.dirty_yellow));
+            } else if(balance < 0) {
+                mIncomeSpentDifference.setTextColor(ContextCompat.getColor(this, R.color.dark_red));
+            } else if (balance > 0) {
+                mIncomeSpentDifference.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+            }
         }
     }
 
