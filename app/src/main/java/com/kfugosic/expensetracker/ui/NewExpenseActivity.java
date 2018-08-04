@@ -196,12 +196,11 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
         String imageFileName = "tmp_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
+        return File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-        return image;
     }
 
     static final int REQUEST_TAKE_PHOTO = 1;
@@ -283,7 +282,7 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
             }
         }
 
-        Uri uri = getContentResolver().insert(ExpensesContract.ExpensesEntry.CONTENT_URI, contentValues);
+        getContentResolver().insert(ExpensesContract.ExpensesEntry.CONTENT_URI, contentValues);
 
         Intent intent = new Intent();
         intent.putExtra(MainActivity.SHOULD_RESTART_KEY, true);

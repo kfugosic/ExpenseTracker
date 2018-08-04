@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.kfugosic.expensetracker.R;
-import com.kfugosic.expensetracker.data.categories.CategoriesContract;
 import com.kfugosic.expensetracker.data.expenses.ExpensesContract;
 import com.kfugosic.expensetracker.loaders.DataLoader;
 import com.kfugosic.expensetracker.loaders.IDataLoaderListener;
@@ -20,7 +19,6 @@ import com.kfugosic.expensetracker.recyclerviews.ExpensesAdapter;
 import com.kfugosic.expensetracker.util.ToolbarUtil;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

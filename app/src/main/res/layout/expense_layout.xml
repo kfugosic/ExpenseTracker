@@ -39,6 +39,7 @@
         android:layout_width="@dimen/rectangle_dim"
         android:layout_height="@dimen/rectangle_margin"
         android:layout_marginEnd="@dimen/expense_image_margin_end"
+        android:contentDescription="@string/bill_photo"
         app:layout_constraintEnd_toStartOf="@+id/expense_delete"/>
 
     <View

@@ -1,6 +1,5 @@
 package com.kfugosic.expensetracker.util;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -16,7 +15,7 @@ public class ToolbarUtil {
             Objects.requireNonNull(activity.getSupportActionBar()).setDisplayShowTitleEnabled(false);
         } catch (Exception ignorable){
             // do nothing
-        };
+        }
     }
 
 }

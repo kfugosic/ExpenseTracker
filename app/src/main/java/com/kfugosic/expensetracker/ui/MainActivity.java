@@ -12,7 +12,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -115,11 +114,6 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
         } else {
             loaderManager.restartLoader(CategoriesActivity.CATEGORIES_LOADER_ID, null, categoriesLoader);
         }
-
-        String selection = ExpensesContract.ExpensesEntry.COLUMN_DATE + ">=?";
-        String[] selectionArgs = new String[]{String.valueOf(CalendarUtils.getTodaysDateMillis())};
-        DataLoader expensesLoader = new DataLoader(this, this, ExpensesContract.ExpensesEntry.CONTENT_URI, selection, selectionArgs);
-
     }
 
     public void initOrRestartMonthLoader() {
@@ -191,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     }
 
     private void fillPieChart(SparseArray<Float> amountByCategory) {
-        ArrayList<PieEntry> values = new ArrayList<PieEntry>();
+        ArrayList<PieEntry> values = new ArrayList<>();
         for(int i = 0; i < amountByCategory.size(); i++) {
             int key = amountByCategory.keyAt(i);
             Float amount = amountByCategory.get(key);
@@ -297,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
 
         MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
 
-        mAdView = (AdView) findViewById(R.id.adView);
+        mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .addTestDevice("33ADD80C74AAACE7B0DDE64ED58F8D19") // Add your device if you are not testing on emulator

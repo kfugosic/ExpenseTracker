@@ -4,6 +4,6 @@ import android.database.Cursor;
 
 public interface IDataLoaderListener {
 
-    public void onDataLoaded(int id, Cursor cursor);
+    void onDataLoaded(int id, Cursor cursor);
 
 }

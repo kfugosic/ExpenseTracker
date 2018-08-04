@@ -9,9 +9,6 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 
-import com.kfugosic.expensetracker.data.categories.CategoriesContract;
-import com.kfugosic.expensetracker.recyclerviews.CategoriesAdapter;
-
 import java.lang.ref.WeakReference;
 
 public class DataLoader implements LoaderManager.LoaderCallbacks<Cursor> {

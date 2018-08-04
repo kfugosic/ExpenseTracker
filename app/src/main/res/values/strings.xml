@@ -34,5 +34,7 @@
     <string name="pie_chart">Pie chart</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
+    <string name="bill_photo">Bill photo</string>
+    <string name="settings">Settings</string>
 
 </resources>

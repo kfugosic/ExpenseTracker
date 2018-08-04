@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
-import android.util.Log;
 
 import com.kfugosic.expensetracker.data.expenses.ExpensesContract;
 import com.kfugosic.expensetracker.util.CalendarUtils;
@@ -44,11 +42,18 @@ public class ExpensesWidgetService extends IntentService {
     }
 
     private void handleActionUpdateExpensesTextViews() {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, ExpensesWidgetProvider.class));
+
         String selection = ExpensesContract.ExpensesEntry.COLUMN_DATE + ">=?";
         String[] selectionArgs = new String[]{String.valueOf(CalendarUtils.getThisMonthMillis())};
         Cursor cursor = getContentResolver().query(ExpensesContract.ExpensesEntry.CONTENT_URI, null, selection, selectionArgs, null);
         if(cursor == null || cursor.getCount() <= 0) {
-            return;
+            List<Float> amounts = new ArrayList<>();
+            amounts.add(0.0f);
+            amounts.add(0.0f);
+            amounts.add(0.0f);
+            ExpensesWidgetProvider.updateAllTextViews(this, appWidgetManager, appWidgetIds, amounts);
         }
         cursor.moveToPosition(-1);
         float thisDay = 0.0f;
@@ -71,8 +76,6 @@ public class ExpensesWidgetService extends IntentService {
                 thisWeek += amount;
             }
          }
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, ExpensesWidgetProvider.class));
 
         List<Float> amounts = new ArrayList<>();
         amounts.add(thisDay);

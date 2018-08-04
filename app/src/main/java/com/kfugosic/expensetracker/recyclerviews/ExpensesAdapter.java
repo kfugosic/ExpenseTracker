@@ -2,10 +2,7 @@ package com.kfugosic.expensetracker.recyclerviews;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -27,7 +24,6 @@ import com.kfugosic.expensetracker.ui.StatisticsActivity;
 import com.kfugosic.expensetracker.widget.ExpensesWidgetService;
 import com.squareup.picasso.Picasso;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
@@ -129,10 +125,10 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
                 mExpenseDescription.setText(desc);
             }
             mExpenseCategoryColor.setBackgroundColor(color);
-            InputStream imageStream = null;
 
             if(uri != null) {
                 try {
+//                    InputStream imageStream = null;
 //                    imageStream = mContext.getContentResolver().openInputStream(uri);
 //                    Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
 //                    mExpenseImage.setImageBitmap(selectedImage);
@@ -162,7 +158,7 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String[] selectionArgs = new String[]{String.valueOf(itemView.getTag())};
-                        int res = mContext.getContentResolver().delete(ExpensesContract.ExpensesEntry.CONTENT_URI, "_id=?", selectionArgs);
+                        mContext.getContentResolver().delete(ExpensesContract.ExpensesEntry.CONTENT_URI, "_id=?", selectionArgs);
                         StatisticsActivity activity = (StatisticsActivity) mContext;
                         activity.getSupportLoaderManager().restartLoader(StatisticsActivity.EXPENSES_LOADER_ID, null, activity.getLoader());
                         ExpensesWidgetService.startActionUpdateExpensesTextviews(mContext);

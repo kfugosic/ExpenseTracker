@@ -138,7 +138,7 @@ public class CategoriesActivity extends AppCompatActivity implements IDataLoader
         contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, name);
         contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_COLOR, color);
 
-        Uri uri = getContentResolver().insert(CategoriesContract.CategoriesEntry.CONTENT_URI, contentValues);
+        getContentResolver().insert(CategoriesContract.CategoriesEntry.CONTENT_URI, contentValues);
         getSupportLoaderManager().restartLoader(CATEGORIES_LOADER_ID, null, mLoader);
 
         try {

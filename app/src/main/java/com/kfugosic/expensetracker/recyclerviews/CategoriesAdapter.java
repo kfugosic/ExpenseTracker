@@ -8,7 +8,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,29 +110,29 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
                 builder = new AlertDialog.Builder(mContext);
             }
             builder.setTitle("Delete category")
-                .setMessage("Are you sure you want to delete this category?")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        String[] selectionArgs = new String[]{String.valueOf(itemView.getTag())};
-                        int res = mContext.getContentResolver().delete(CategoriesContract.CategoriesEntry.CONTENT_URI, "_id=?", selectionArgs);
-                        CategoriesActivity activity = (CategoriesActivity) mContext;
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(ExpensesContract.ExpensesEntry.COLUMN_CATEGORY, -1);
-                        res = mContext.getContentResolver().update(
-                                ExpensesContract.ExpensesEntry.CONTENT_URI,
-                                contentValues,
-                                ExpensesContract.ExpensesEntry.COLUMN_CATEGORY+"=?",
-                                selectionArgs);
-                        activity.getSupportLoaderManager().restartLoader(CategoriesActivity.CATEGORIES_LOADER_ID, null, activity.getLoader());
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+                    .setMessage("Are you sure you want to delete this category?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            String[] selectionArgs = new String[]{String.valueOf(itemView.getTag())};
+                            mContext.getContentResolver().delete(CategoriesContract.CategoriesEntry.CONTENT_URI, "_id=?", selectionArgs);
+                            CategoriesActivity activity = (CategoriesActivity) mContext;
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(ExpensesContract.ExpensesEntry.COLUMN_CATEGORY, -1);
+                            mContext.getContentResolver().update(
+                                    ExpensesContract.ExpensesEntry.CONTENT_URI,
+                                    contentValues,
+                                    ExpensesContract.ExpensesEntry.COLUMN_CATEGORY + "=?",
+                                    selectionArgs);
+                            activity.getSupportLoaderManager().restartLoader(CategoriesActivity.CATEGORIES_LOADER_ID, null, activity.getLoader());
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
 
         }
 
