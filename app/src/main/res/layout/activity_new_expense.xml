@@ -90,15 +90,23 @@
             android:scaleType="centerInside"
             android:contentDescription="@string/image_preview"
             app:layout_constraintTop_toBottomOf="@id/btn_camera"
-            app:layout_constraintBottom_toTopOf="@id/btn_add"
+            app:layout_constraintBottom_toTopOf="@id/cb_stay"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+
+        <CheckBox
+            android:id="@+id/cb_stay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/stay_on_this_screen"
+            app:layout_constraintBottom_toTopOf="@id/btn_add"/>
 
         <Button
             android:id="@+id/btn_add"
             android:layout_width="match_parent"
             android:layout_height="@dimen/new_expense_elements_height_bigger"
             android:gravity="center"
+            android:enabled="false"
             style="@style/TextAppearance.AppCompat.Large"
             android:text="@string/add"
             app:layout_constraintBottom_toBottomOf="parent"/>

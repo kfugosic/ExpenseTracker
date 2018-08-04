@@ -106,17 +106,17 @@ public class CategoriesActivity extends AppCompatActivity implements IDataLoader
     void onColorPickerClick() {
         ColorPickerDialogBuilder
                 .with(this)
-                .setTitle("Choose color")
+                .setTitle(getString(R.string.choose_color))
                 .initialColor(((ColorDrawable) mColorPickerView.getBackground()).getColor())
                 .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
                 .density(12)
-                .setPositiveButton("Select", new ColorPickerClickListener() {
+                .setPositiveButton(getString(R.string.select), new ColorPickerClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
                         mColorPickerView.setBackgroundColor(selectedColor);
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -129,10 +129,6 @@ public class CategoriesActivity extends AppCompatActivity implements IDataLoader
     void onAddButtonClick() {
         String name = mCategoryNameView.getText().toString();
         Integer color = ((ColorDrawable) mColorPickerView.getBackground()).getColor();
-        if (TextUtils.isEmpty(name)) {
-            Toast.makeText(this, "Please set category name.", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, name);
@@ -150,7 +146,7 @@ public class CategoriesActivity extends AppCompatActivity implements IDataLoader
 
         mCategoryNameView.setText("");
         mColorPickerView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent));
-        Toast.makeText(this, "New category created!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.new_category_created, Toast.LENGTH_SHORT).show();
 
     }
 

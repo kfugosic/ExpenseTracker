@@ -44,7 +44,6 @@ public class CategoriesContentProvider extends ContentProvider {
                 );
                 break;
             case SPECIFIC_CATEGORY:
-                Log.d("TAG123", "query: ");
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

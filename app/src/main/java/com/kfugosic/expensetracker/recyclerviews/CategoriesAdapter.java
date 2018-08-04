@@ -62,10 +62,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
 
     @Override
     public int getItemCount() {
-        if (mCursor == null) {
-            return 0;
-        }
-        return mCursor.getCount();
+        return mCursor == null ? 0 : mCursor.getCount();
     }
 
     @Override
@@ -109,8 +106,8 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
             } else {
                 builder = new AlertDialog.Builder(mContext);
             }
-            builder.setTitle("Delete category")
-                    .setMessage("Are you sure you want to delete this category?")
+            builder.setTitle(R.string.delete_category)
+                    .setMessage(R.string.delete_category_confirm_question)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             String[] selectionArgs = new String[]{String.valueOf(itemView.getTag())};

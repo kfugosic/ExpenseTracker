@@ -34,7 +34,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     }
 
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        Toast error = Toast.makeText(getContext(), "Please select a decimal number!", Toast.LENGTH_SHORT);
+        Toast error = Toast.makeText(getContext(), R.string.please_select_decimal_number, Toast.LENGTH_SHORT);
         String sizeKey = getString(R.string.pref_income_key);
         if (preference.getKey().equals(sizeKey)) {
             String stringSize = (String) newValue;

@@ -5,15 +5,19 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.kfugosic.expensetracker.R;
 import com.kfugosic.expensetracker.data.categories.CategoriesContract.CategoriesEntry;
 
 public class CategoriesDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "categoriesDb.db";
     private static final int VERSION = 1;
+    
+    private Context mContext;
 
     CategoriesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
+        mContext = context.getApplicationContext();
     }
 
     @Override
@@ -26,16 +30,16 @@ public class CategoriesDbHelper extends SQLiteOpenHelper {
 
         // TODO Optimize bulk insert
         ContentValues contentValues = new ContentValues();
-        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, "Groceries");
+        contentValues.put(CategoriesEntry.COLUMN_NAME, mContext.getString(R.string.groceries_category));
         contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_COLOR, -10163947);
         sqLiteDatabase.insert(CategoriesEntry.TABLE_NAME, null, contentValues);
-        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, "Vehicle");
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, mContext.getString(R.string.vehicle_category));
         contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_COLOR, -15374871);
         sqLiteDatabase.insert(CategoriesEntry.TABLE_NAME, null, contentValues);
-        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, "Bills");
-        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_COLOR, -7829368);
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, mContext.getString(R.string.bills_category));
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_COLOR, -3684427);
         sqLiteDatabase.insert(CategoriesEntry.TABLE_NAME, null, contentValues);
-        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, "Medical");
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, mContext.getString(R.string.medical_category));
         contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_COLOR, -1496534);
         sqLiteDatabase.insert(CategoriesEntry.TABLE_NAME, null, contentValues);
     }

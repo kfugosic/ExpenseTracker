@@ -1,8 +1,10 @@
 package com.kfugosic.expensetracker.recyclerviews;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -13,7 +15,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,26 +72,23 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
         int categoryId = mCursor.getInt(categoryIndex);
         long date = mCursor.getLong(dateIndex);
         Uri photoUri = null;
-        if(mCursor.getString(photoIndex) != null) {
+        if (mCursor.getString(photoIndex) != null) {
             photoUri = Uri.parse(mCursor.getString(photoIndex));
         }
 
         holder.itemView.setTag(id);
         int color = 0;
-        if(mCategoryIdToColor.containsKey(categoryId)) {
+        if (mCategoryIdToColor.containsKey(categoryId)) {
             color = mCategoryIdToColor.get(categoryId);
         }
         holder.setValues(amount, desc, color, photoUri);
-        Log.d("TAG123", "onBindViewHolder: " + id +  " "  + amount + " " + categoryId + " " + date + " " +photoUri);
+        Log.d("TAG123", "onBindViewHolder: " + id + " " + amount + " " + categoryId + " " + date + " " + photoUri);
 
     }
 
     @Override
     public int getItemCount() {
-        if (mCursor == null) {
-            return 0;
-        }
-        return mCursor.getCount();
+        return mCursor == null ? 0 : mCursor.getCount();
     }
 
     @Override
@@ -112,6 +113,7 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
         @BindView(R.id.expense_image)
         ImageView mExpenseImage;
 
+        private Uri mUri;
 
         public ExpensesViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -121,27 +123,50 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
 
         public void setValues(float amount, String desc, int color, final Uri uri) {
             mExpenseAmount.setText(String.format(Locale.ENGLISH, "%.2f", amount));
-            if( !TextUtils.isEmpty(desc)) {
+            if (!TextUtils.isEmpty(desc)) {
                 mExpenseDescription.setText(desc);
             }
             mExpenseCategoryColor.setBackgroundColor(color);
 
-            if(uri != null) {
+            if (uri != null) {
                 try {
-//                    InputStream imageStream = null;
-//                    imageStream = mContext.getContentResolver().openInputStream(uri);
-//                    Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-//                    mExpenseImage.setImageBitmap(selectedImage);
-//                    imageStream.close();
                     Picasso.get()
                             .load(uri)
                             .into(mExpenseImage);
                     mExpenseCategoryColor.setBackgroundColor(color);
+                    mUri = uri;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(mContext, "Error loading image", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.error_loading_image, Toast.LENGTH_SHORT).show();
                 }
             }
+        }
+
+        @OnClick(R.id.expense_image)
+            //https://stackoverflow.com/questions/7693633/android-image-dialog-popup
+        void onImageClick() {
+            if (mUri == null) {
+                return;
+            }
+            final Dialog builder = new Dialog(mContext);
+            builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            builder.getWindow().setBackgroundDrawable(
+                    new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+            ImageView imageView = new ImageView(mContext);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    builder.dismiss();
+                }
+            });
+            Picasso.get()
+                    .load(mUri)
+                    .into(imageView);
+            builder.addContentView(imageView, new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+            builder.show();
         }
 
         @OnClick(R.id.expense_delete)
@@ -153,24 +178,24 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
             } else {
                 builder = new AlertDialog.Builder(mContext);
             }
-            builder.setTitle("Delete expense")
-                .setMessage("Are you sure you want to delete this expense?")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        String[] selectionArgs = new String[]{String.valueOf(itemView.getTag())};
-                        mContext.getContentResolver().delete(ExpensesContract.ExpensesEntry.CONTENT_URI, "_id=?", selectionArgs);
-                        StatisticsActivity activity = (StatisticsActivity) mContext;
-                        activity.getSupportLoaderManager().restartLoader(StatisticsActivity.EXPENSES_LOADER_ID, null, activity.getLoader());
-                        ExpensesWidgetService.startActionUpdateExpensesTextviews(mContext);
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+            builder.setTitle(R.string.delete_expense)
+                    .setMessage(R.string.delete_expense_confirm_question)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            String[] selectionArgs = new String[]{String.valueOf(itemView.getTag())};
+                            mContext.getContentResolver().delete(ExpensesContract.ExpensesEntry.CONTENT_URI, "_id=?", selectionArgs);
+                            StatisticsActivity activity = (StatisticsActivity) mContext;
+                            activity.getSupportLoaderManager().restartLoader(StatisticsActivity.EXPENSES_LOADER_ID, null, activity.getLoader());
+                            ExpensesWidgetService.startActionUpdateExpensesTextviews(mContext);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
 
         }
 

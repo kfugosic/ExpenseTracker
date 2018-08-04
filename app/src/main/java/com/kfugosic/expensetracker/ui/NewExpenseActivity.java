@@ -1,8 +1,10 @@
 package com.kfugosic.expensetracker.ui;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -21,6 +23,8 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -51,12 +55,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 
 import static com.kfugosic.expensetracker.ui.CategoriesActivity.CATEGORIES_LOADER_ID;
 
 public class NewExpenseActivity extends AppCompatActivity implements IDataLoaderListener {
 
-    private static final String TAG = "NewExpenseActivity";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_IMAGE_FROM_GALLERY = 2;
     private static final String SAVED_TEXTVIEW_KEY = "textview";
@@ -64,8 +68,9 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
     private static final String SAVED_CATEGORY_NAME_KEY = "category_name";
     private static final String SAVED_TEMP_IMAGE_URI_KEY = "temp_image_uri";
     private static final String SAVED_IMAGE_URI_KEY = "image_uri";
-    private static final int IMAGE_DIMENSIONS = 700;
-
+    private static final int IMAGE_DIMENSIONS = 600;
+    private static final String STAY_BUTTON_KEY = "stay_button";
+    private static final boolean DEFAULT_STAY_BUTTON_VALUE = false;
 
     @BindView(R.id.et_amount)
     EditText mAmount;
@@ -81,6 +86,10 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
     ImageView mImageView;
     @BindView(R.id.tv_selected_image)
     TextView mImageTextView;
+    @BindView(R.id.cb_stay)
+    CheckBox mStayButton;
+    @BindView(R.id.btn_add)
+    Button mAddButton;
 
     private DataLoader mLoader;
     private Cursor mCursor;
@@ -110,6 +119,8 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             mCameraBtn.setEnabled(false);
         }
+
+        setupCheckBox();
 
     }
 
@@ -151,7 +162,6 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        Log.d(TAG, "onActivityResult: ");
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             String filename = mTempImageUri.getPath();
             int cut = filename.lastIndexOf('/');
@@ -186,10 +196,26 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
                         .into(mImageView);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                Toast.makeText(this, "ERROR - File not found", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.file_not_found_err, Toast.LENGTH_LONG).show();
             }
         }
     }
+
+
+    private void setupCheckBox() {
+        boolean value = getPreferences(MODE_PRIVATE).getBoolean(STAY_BUTTON_KEY, DEFAULT_STAY_BUTTON_VALUE);
+        mStayButton.setChecked(value);
+        mStayButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean value) {
+                SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean(STAY_BUTTON_KEY, value);
+                editor.apply();
+            }
+        });
+    }
+
 
     // developer.android.com
     private File createImageFile() throws IOException {
@@ -243,14 +269,18 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
         }
     }
 
+    @OnTextChanged(R.id.et_amount)
+    protected void handleTextChange(Editable editable) {
+        if (editable == null || editable.toString().trim().isEmpty()) {
+            mAddButton.setEnabled(false);
+        } else {
+            mAddButton.setEnabled(true);
+        }
+    }
+
     @OnClick(R.id.btn_add)
     void onAddButtonClick() {
-        Editable editable = mAmount.getText();
-        if(editable == null || editable.toString().trim().isEmpty()) {
-            Toast.makeText(this, "Please set the amount.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        float amount = Float.valueOf(editable.toString());
+        float amount = Float.valueOf(mAmount.getText().toString());
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(ExpensesContract.ExpensesEntry.COLUMN_AMOUNT, amount);
@@ -289,7 +319,25 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
         setResult(RESULT_OK, intent);
 
         ExpensesWidgetService.startActionUpdateExpensesTextviews(this);
-        finish();
+        Toast.makeText(this, R.string.new_expense_added_info, Toast.LENGTH_SHORT).show();
+        if(mStayButton.isChecked()) {
+            resetUI();
+        } else {
+            finish();
+        }
+
+    }
+
+    private void resetUI() {
+        mAmount.setText("");
+        mDescription.setText("");
+        mBtnSelectCategory.setText(R.string.select_category_button_default_text);
+        mImageTextView.setText(R.string.image_text_view_default_text);
+        mImageView.setImageBitmap(null);
+        mTempImageUri = null;
+        mImageUri = null;
+        mSelectedCategory = -1;
+        mSelectedImage = null;
     }
 
     @OnClick(R.id.btn_select_category)
@@ -337,8 +385,8 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
                         mBtnSelectCategory.setText(name);
                     }
                 },
-                "name");
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                CategoriesContract.CategoriesEntry.COLUMN_NAME);
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // do nothing
             }

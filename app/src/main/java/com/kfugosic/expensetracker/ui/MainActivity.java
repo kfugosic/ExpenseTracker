@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
             Float amount = amountByCategory.get(key);
             String name = mCategoryIdToName.get(key);
             if(TextUtils.isEmpty(name)) {
-                name = "None";
+                name = getString(R.string.no_category_default);
             }
             values.add(new PieEntry(amount, name));
         }
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
         PieDataSet dataSet = new PieDataSet(values, null);
         PieData data = new PieData(dataSet);
         Description desc = new Description();
-        desc.setText("Monthly expenses");
+        desc.setText(getString(R.string.monthly_expenses));
         List<Integer> colors = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry: mCategoryIdToColor.entrySet()) {
             if(amountByCategory.get(entry.getKey(), 0f) > 1E-10 ){
@@ -358,7 +358,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     private void updateIncomeSpentDifferenceTV() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        float income = Float.valueOf(sharedPreferences.getString("income", "0"));
+        float income = Float.valueOf(sharedPreferences.getString(getString(R.string.pref_income_key), "0"));
 
         if(income < 1E-10) {
             mIncomeSpentDifference.setVisibility(View.GONE);
