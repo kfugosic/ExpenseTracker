@@ -18,4 +18,28 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="list_toolbar_side_margin">0dp</dimen>
     <dimen name="fab_margin">20dp</dimen>
     <dimen name="fab_dims">56dp</dimen>
+    <dimen name="tv_expenses_margin_top">8dp</dimen>
+    <dimen name="tv_amount_today_padding">12dp</dimen>
+    <dimen name="tv_amount_today_textsize">40sp</dimen>
+    <dimen name="zerodp">0dp</dimen>
+    <dimen name="tv_amount_week_padding">16dp</dimen>
+    <dimen name="tv_amount_week_textsize">20sp</dimen>
+    <dimen name="piechart_dim">230dp</dimen>
+    <dimen name="piechart_layout_margin">10dp</dimen>
+    <dimen name="btn_all_expenses_height">50dp</dimen>
+    <dimen name="btn_all_expenses_margin">25dp</dimen>
+    <dimen name="rectangle_margin">15dp</dimen>
+    <dimen name="onedp">1dp</dimen>
+    <dimen name="divider_view_margin">12dp</dimen>
+    <dimen name="divider_view_margin_top">12dp</dimen>
+    <dimen name="category_item_padding">5dp</dimen>
+    <dimen name="expense_item_padding">5dp</dimen>
+    <dimen name="expense_image_margin_end">8dp</dimen>
+    <dimen name="rv_margin">8dp</dimen>
+    <dimen name="tv_margin">10dp</dimen>
+    <dimen name="tv_name_textsize">16sp</dimen>
+    <dimen name="photo_info_margin_top">20dp</dimen>
+    <dimen name="photo_info_margin_bottom">10dp</dimen>
+    <dimen name="camera_btn_dim">48dp</dimen>
+
 </resources>

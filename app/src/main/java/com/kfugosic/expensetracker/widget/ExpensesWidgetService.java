@@ -25,8 +25,6 @@ public class ExpensesWidgetService extends IntentService {
     }
 
     public static void startActionUpdateExpensesTextviews(Context context) {
-        Log.d("TAG12345", "startActionUpdateExpensesTextviews321321: ");
-
         Intent intent = new Intent(context, ExpensesWidgetService.class);
         intent.setAction(ACTION_UPDATE_EXPENSES_TEXTVIEWS);
         context.startService(intent);
@@ -35,15 +33,11 @@ public class ExpensesWidgetService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Log.d("TAG12345", "startActionUpdateExpensesTextviews: ");
-
         if(intent == null) {
             return;
         }
         final String action = intent.getAction();
-        Log.d("TAG12345", "startActionUpdateExpensesTextviews: ");
         if(ACTION_UPDATE_EXPENSES_TEXTVIEWS.equals(action)) {
-            Log.d("TAG12345", "startActionUpdateExpensesTextviews: ");
             handleActionUpdateExpensesTextViews();
         }
 
@@ -85,6 +79,7 @@ public class ExpensesWidgetService extends IntentService {
         amounts.add(thisWeek);
         amounts.add(thisMonth);
         ExpensesWidgetProvider.updateAllTextViews(this, appWidgetManager, appWidgetIds, amounts);
+        cursor.close();
     }
 
 }

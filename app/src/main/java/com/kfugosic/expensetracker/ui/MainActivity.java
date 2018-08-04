@@ -137,8 +137,6 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
 
     @Override
     public void onDataLoaded(int id, Cursor cursor) {
-        Log.d("TAG123", "onDataLoaded: " + id+" "+cursor.getCount());
-
         float thisDay = 0.0f;
         float thisWeek = 0.0f;
         float thisMonth = 0.0f;
@@ -170,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
                     thisWeek += amount;
                 }
             }
-            Log.d("TAG1234", String.format("onDataLoaded: %f %f %f", thisDay, thisWeek, thisMonth));
             mAmountToday.setText(String.format(Locale.ENGLISH, "$%.2f", thisDay));
             mAmountWeek.setText(String.format(Locale.ENGLISH, "$%.2f", thisWeek));
             mAmountMonth.setText(String.format(Locale.ENGLISH, "$%.2f", thisMonth));
@@ -203,12 +200,10 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
                 name = "None";
             }
             values.add(new PieEntry(amount, name));
-            Log.d("TAG123", "fillPieChart: "+amount+" "+key);
         }
 
         PieDataSet dataSet = new PieDataSet(values, null);
         PieData data = new PieData(dataSet);
-        //data.setValueFormatter(new PercentFormatter());
         Description desc = new Description();
         desc.setText("Monthly expenses");
         List<Integer> colors = new ArrayList<>();
@@ -244,12 +239,10 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        Log.d("TAG123", "onActivityResult: "+resultCode);
         switch (requestCode) {
             case REQUEST_CODE_ADD:
                 if(data != null) {
                     boolean res = data.getBooleanExtra(SHOULD_RESTART_KEY, false);
-                    Log.d("TAG123", "onActivityResult: "+res);
                     if (res) {
                         initOrRestartCategoriesLoader();
                     }
@@ -260,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
     }
 
     //
-    //
+    // Buttons
     //
 
     @OnClick(R.id.fab_add)
@@ -311,19 +304,6 @@ public class MainActivity extends AppCompatActivity implements IDataLoaderListen
                 .build();
         mAdView.loadAd(adRequest);
 
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean("MyBoolean", true);
-        Log.d("TAG123", "onSaveInstanceState: ");
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        Log.d("TAG123", "onRestoreInstanceState: ");
     }
 
     private void setupRemoteConfig() {

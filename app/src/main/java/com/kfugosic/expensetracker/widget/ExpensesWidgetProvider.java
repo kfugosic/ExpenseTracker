@@ -20,8 +20,8 @@ import java.util.Locale;
 public class ExpensesWidgetProvider extends AppWidgetProvider {
 
     private static final int ID_TODAY = 0;
-    private static final int ID_THIS_WEEK = 0;
-    private static final int ID_THIS_MONTH = 0;
+    private static final int ID_THIS_WEEK = 1;
+    private static final int ID_THIS_MONTH = 2;
 
     static List<Float> mAmounts;
 
@@ -35,9 +35,9 @@ public class ExpensesWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
 
         if (mAmounts != null) {
-            views.setTextViewText(R.id.appwidget_today, String.format(Locale.ENGLISH, "$%.1f", mAmounts.get(ID_TODAY)));
-            views.setTextViewText(R.id.appwidget_week, String.format(Locale.ENGLISH, "$%.1f", mAmounts.get(ID_THIS_WEEK)));
-            views.setTextViewText(R.id.appwidget_month, String.format(Locale.ENGLISH, "$%.1f", mAmounts.get(ID_THIS_MONTH)));
+            views.setTextViewText(R.id.appwidget_today, String.format(Locale.ENGLISH, "$%.2f", mAmounts.get(ID_TODAY)));
+            views.setTextViewText(R.id.appwidget_week, String.format(Locale.ENGLISH, "$%.2f", mAmounts.get(ID_THIS_WEEK)));
+            views.setTextViewText(R.id.appwidget_month, String.format(Locale.ENGLISH, "$%.2f", mAmounts.get(ID_THIS_MONTH)));
         }
 
         // Instruct the widget manager to update the widget

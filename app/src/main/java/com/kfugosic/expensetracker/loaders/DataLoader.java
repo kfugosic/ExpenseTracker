@@ -53,9 +53,7 @@ public class DataLoader implements LoaderManager.LoaderCallbacks<Cursor> {
             // onStartLoading() is called when a loader first starts loading data
             @Override
             protected void onStartLoading() {
-                Log.d(TAG, "onStartLoading: " + mSelection + mData);
                 if (mCaching && mData != null) {
-                    Log.d(TAG, "onStartLoading: "+mData.getCount());
                     deliverResult(mData);
                     return;
                 }
@@ -80,7 +78,6 @@ public class DataLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
             // deliverResult sends the result of the load, a Cursor, to the registered listener
             public void deliverResult(Cursor data) {
-                Log.d(TAG, "deliverResult: "+data.getCount());
                 mData = data;
                 super.deliverResult(data);
             }
@@ -90,7 +87,6 @@ public class DataLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d(TAG, "onLoadFinished: ");
         mListener.onDataLoaded(loader.getId(), data);
     }
 

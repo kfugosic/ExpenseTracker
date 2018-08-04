@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.FileProvider;
@@ -35,6 +34,7 @@ import com.kfugosic.expensetracker.loaders.DataLoader;
 import com.kfugosic.expensetracker.loaders.IDataLoaderListener;
 import com.kfugosic.expensetracker.util.ToolbarUtil;
 import com.kfugosic.expensetracker.widget.ExpensesWidgetService;
+import com.squareup.picasso.Picasso;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -45,6 +45,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import butterknife.BindView;
@@ -54,9 +55,17 @@ import butterknife.OnClick;
 import static com.kfugosic.expensetracker.ui.CategoriesActivity.CATEGORIES_LOADER_ID;
 
 public class NewExpenseActivity extends AppCompatActivity implements IDataLoaderListener {
-    private static final String TAG = "TAG1234";
+
+    private static final String TAG = "NewExpenseActivity";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_IMAGE_FROM_GALLERY = 2;
+    private static final String SAVED_TEXTVIEW_KEY = "textview";
+    private static final String SAVED_CATEGORY_ID_KEY = "category_id";
+    private static final String SAVED_CATEGORY_NAME_KEY = "category_name";
+    private static final String SAVED_TEMP_IMAGE_URI_KEY = "temp_image_uri";
+    private static final String SAVED_IMAGE_URI_KEY = "image_uri";
+    private static final int IMAGE_DIMENSIONS = 700;
+
 
     @BindView(R.id.et_amount)
     EditText mAmount;
@@ -75,10 +84,8 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
 
     private DataLoader mLoader;
     private Cursor mCursor;
-
-    private String mCurrentPhotoPath;
+    private Uri mTempImageUri;
     private Uri mImageUri;
-
     private int mSelectedCategory = -1;
     private Bitmap mSelectedImage;
 
@@ -107,54 +114,76 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(SAVED_TEXTVIEW_KEY, mImageTextView.getText().toString());
+        outState.putInt(SAVED_CATEGORY_ID_KEY, mSelectedCategory);
+        outState.putString(SAVED_CATEGORY_NAME_KEY, mBtnSelectCategory.getText().toString());
+        outState.putParcelable(SAVED_TEMP_IMAGE_URI_KEY, mTempImageUri);
+        outState.putParcelable(SAVED_IMAGE_URI_KEY, mImageUri);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        if(savedInstanceState == null) {
+            return;
+        }
+        mImageTextView.setText(savedInstanceState.getString(SAVED_TEXTVIEW_KEY));
+        mSelectedCategory = savedInstanceState.getInt(SAVED_CATEGORY_ID_KEY);
+        mTempImageUri = savedInstanceState.getParcelable(SAVED_TEMP_IMAGE_URI_KEY);
+        mBtnSelectCategory.setText(savedInstanceState.getString(SAVED_CATEGORY_NAME_KEY));
+        try {
+            mImageUri = savedInstanceState.getParcelable(SAVED_IMAGE_URI_KEY);
+            InputStream imageStream = getContentResolver().openInputStream(mImageUri);
+            mSelectedImage = BitmapFactory.decodeStream(imageStream);
+            mImageView.setImageBitmap(mSelectedImage);
+
+            Picasso.get()
+                    .load(mImageUri)
+                    .resize(IMAGE_DIMENSIONS,IMAGE_DIMENSIONS)
+                    .centerInside()
+                    .into(mImageView);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Log.d(TAG, "onActivityResult: ");
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            //Bundle extras = data.getExtras();
-            //Bitmap imageBitmap = (Bitmap) extras.get("data");
-            //Log.d(TAG, "onActivityResult1: "+imageBitmap.getHeight()+" "+ imageBitmap.getWidth());
-            String filename = mImageUri.getPath();
+            String filename = mTempImageUri.getPath();
             int cut = filename.lastIndexOf('/');
             filename = filename.substring(cut + 1);
-            Log.d(TAG, "onActivityResult: "+ filename );
-            getContentResolver().notifyChange(mImageUri, null);
+            getContentResolver().notifyChange(mTempImageUri, null);
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageUri);
-                Log.d(TAG, "onActivityResult2: "+bitmap.getHeight()+" "+ bitmap.getWidth());
-                mImageView.setImageBitmap(bitmap);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mTempImageUri);
                 mImageTextView.setText(R.string.default_image_from_camera_textview);
                 mSelectedImage = bitmap;
-                getContentResolver().delete(mImageUri, null, null);
+                mImageUri = mTempImageUri;
+                Picasso.get()
+                        .load(mImageUri)
+                        .resize(IMAGE_DIMENSIONS,IMAGE_DIMENSIONS)
+                        .centerInside()
+                        .into(mImageView);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //mImageView.setImageBitmap(imageBitmap);
         } else if (requestCode == REQUEST_IMAGE_FROM_GALLERY && resultCode == RESULT_OK) {
             try {
                 Uri imageUri = data.getData();
                 InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                Log.d(TAG, "onActivityResult3: "+selectedImage.getHeight()+" "+ selectedImage.getWidth()+" "+imageUri.getPath());
-                mImageView.setImageBitmap(selectedImage);
-                String fileName = null;
-                String uriString = imageUri.toString();
-                // https://stackoverflow.com/questions/24322738/android-how-to-get-selected-file-name-from-the-document
-                if (uriString.startsWith("content://")) {
-                    Log.d(TAG, "onActivityResult: 11");
-                    Cursor cursor = null;
-                    try {
-                        cursor = getContentResolver().query(imageUri, null, null, null, null);
-                        if (cursor != null && cursor.moveToFirst()) {
-                            fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                        }
-                    } finally {
-                        cursor.close();
-                    }
-                } else if (uriString.startsWith("file://")) {
-                    Log.d(TAG, "onActivityResult: 22");
-                    fileName = new File(uriString).getName();
-                }
-                mImageTextView.setText(fileName);
+                mImageTextView.setText(R.string.default_image_from_gallery_textview);
                 mSelectedImage = selectedImage;
+                mImageUri = imageUri;
+                mTempImageUri = null;
+                Picasso.get()
+                        .load(mImageUri)
+                        .resize(IMAGE_DIMENSIONS,IMAGE_DIMENSIONS)
+                        .centerInside()
+                        .into(mImageView);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "ERROR - File not found", Toast.LENGTH_LONG).show();
@@ -164,7 +193,7 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
 
     // developer.android.com
     private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
         String imageFileName = "tmp_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
@@ -172,33 +201,30 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-        Log.d(TAG, "createImageFile: "+storageDir + " " + imageFileName);
-        mCurrentPhotoPath = image.getAbsolutePath();
-        //mImageUri = Uri.fromFile(image);
         return image;
     }
 
     static final int REQUEST_TAKE_PHOTO = 1;
 
+
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                // Error occurred while creating the File
+                // do nothing
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                mImageUri = FileProvider.getUriForFile(this,
+                mTempImageUri = FileProvider.getUriForFile(this,
                         "com.kfugosic.expensetracker.data.images",
                         photoFile);
-                Log.d(TAG, "dispatchTakePictureIntent: "+ mImageUri);
-                Log.d(TAG, "dispatchTakePictureIntent: "+ photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+//                Log.d(TAG, "dispatchTakePictureIntent: "+ mTempImageUri);
+//                Log.d(TAG, "dispatchTakePictureIntent: "+ photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mTempImageUri);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
@@ -207,10 +233,6 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
     @OnClick(R.id.btn_camera)
     void onCameraButtonClick() {
         dispatchTakePictureIntent();
-        /*Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }*/
     }
 
     @OnClick(R.id.btn_gallery)
@@ -238,7 +260,7 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
         contentValues.put(ExpensesContract.ExpensesEntry.COLUMN_DATE, new Date().getTime());
 
         if(mSelectedImage != null) {
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
             String imageFileName = "IMG_" + timeStamp + "_";
             File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             File file = null;
@@ -255,6 +277,10 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
                     "com.kfugosic.expensetracker.data.images",
                     file);
             contentValues.put(ExpensesContract.ExpensesEntry.COLUMN_PHOTO_LOCATION, imageUri.toString());
+
+            if(mTempImageUri != null) {
+                getContentResolver().delete(mTempImageUri, null, null);
+            }
         }
 
         Uri uri = getContentResolver().insert(ExpensesContract.ExpensesEntry.CONTENT_URI, contentValues);
@@ -293,7 +319,7 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         if(mCursor == null) {
-            // If cursor wasn't set asynchronously by now, we must block thread and load it
+            // If cursor wasn't set asynchronously by now (loader in onCreate), we must block the thread and load it
             mCursor = getContentResolver().query(CategoriesContract.CategoriesEntry.CONTENT_URI,
                     null,
                     null,
@@ -309,6 +335,7 @@ public class NewExpenseActivity extends AppCompatActivity implements IDataLoader
                         mCursor.moveToPosition(clickedPos.get());
                         mSelectedCategory = mCursor.getInt(idIndex);
                         String name = mCursor.getString(nameIndex);
+                        mBtnSelectCategory.setText(name);
                     }
                 },
                 "name");

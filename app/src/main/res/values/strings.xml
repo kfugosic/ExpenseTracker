@@ -15,5 +15,24 @@
     <string name="edit_categories_summary">Add or remove category</string>
     <string name="Category">Select category</string>
     <string name="default_image_from_camera_textview">New image from camera</string>
+    <string name="tv_today_desc">Today\'s expenses</string>
+    <string name="tv_week_desc">This week</string>
+    <string name="tv_month_desc">This month</string>
+    <string name="tv_balance_desc">Total balance</string>
+    <string name="btn_all_expenses_text">All expenses list</string>
+    <string name="category_name_static">Category name</string>
+    <string name="et_name_hint">New category name</string>
+    <string name="tv_color_static">Category color</string>
+    <string name="btn_add_new_category">Add new category</string>
+    <string name="default_image_from_gallery_textview">Selected image from gallery</string>
+    <string name="amount">Amount</string>
+    <string name="description">Description</string>
+    <string name="take_a_photo_or_select_from_gallery">Take a photo or select from gallery</string>
+    <string name="none_selected">None selected</string>
+    <string name="image_preview">Image preview</string>
+    <string name="add">Add</string>
+    <string name="pie_chart">Pie chart</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
 
 </resources>

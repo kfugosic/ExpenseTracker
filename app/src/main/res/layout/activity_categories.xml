@@ -7,24 +7,26 @@
     android:layout_height="match_parent"
     tools:context=".ui.CategoriesActivity">
 
-    <include  layout="@layout/toolbar_container_with_back_nav" android:id="@+id/toolbar_container_snip"
-        app:layout_constraintTop_toBottomOf="parent"/>
+    <include
+        android:id="@+id/toolbar_container_snip"
+        layout="@layout/toolbar_container_with_back_nav"
+        app:layout_constraintTop_toBottomOf="parent" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_categories"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/zerodp"
+        android:layout_marginBottom="@dimen/rv_margin"
+        android:layout_marginTop="@dimen/rv_margin"
         app:layout_constrainedHeight="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintTop_toBottomOf="@id/toolbar_container_snip" />
 
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_margin="5dp"
+        android:layout_height="@dimen/onedp"
+        android:layout_margin="@dimen/divider_view_margin"
         android:background="@color/light_gray"
         app:layout_constraintBottom_toTopOf="@id/et_category_name"
         app:layout_constraintStart_toStartOf="parent" />
@@ -32,20 +34,22 @@
     <TextView
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_margin="10dp"
-        android:text="Category name"
-        android:textSize="16sp"
+        android:layout_height="@dimen/rectangle_dim"
+        android:layout_margin="@dimen/tv_margin"
         android:gravity="center"
+        android:text="@string/category_name_static"
+        android:textSize="@dimen/tv_name_textsize"
         app:layout_constraintBottom_toTopOf="@id/tv_color"
         app:layout_constraintEnd_toStartOf="@+id/et_category_name"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/et_category_name"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/zerodp"
         android:layout_height="wrap_content"
-        android:hint="New category name"
+        android:hint="@string/et_name_hint"
+        android:inputType="text"
+        android:focusable="true"
         app:layout_constraintBottom_toTopOf="@id/color_picker"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tv_name" />
@@ -53,22 +57,22 @@
     <TextView
         android:id="@+id/tv_color"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_margin="10dp"
-        android:text="Category color "
-        android:textSize="16sp"
+        android:layout_height="@dimen/rectangle_dim"
+        android:layout_margin="@dimen/tv_margin"
         android:gravity="center"
+        android:text="@string/tv_color_static"
+        android:textSize="@dimen/tv_name_textsize"
         app:layout_constraintBottom_toTopOf="@id/add_button"
         app:layout_constraintEnd_toStartOf="@+id/color_picker"
         app:layout_constraintStart_toStartOf="parent" />
 
     <View
         android:id="@+id/color_picker"
-        android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:layout_margin="10dp"
-        android:focusable="true"
+        android:layout_width="@dimen/zerodp"
+        android:layout_height="@dimen/rectangle_dim"
+        android:layout_margin="@dimen/tv_margin"
         android:background="@color/colorAccent"
+        android:focusable="true"
         app:layout_constraintBottom_toTopOf="@id/add_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tv_color" />
@@ -77,11 +81,9 @@
         android:id="@+id/add_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="true"
         android:enabled="false"
-        android:text="Add new category"
+        android:focusable="true"
+        android:text="@string/btn_add_new_category"
         app:layout_constraintBottom_toBottomOf="parent" />
-
-    <!--TODO disableat kad je edittext prazan-->
 
 </android.support.constraint.ConstraintLayout>

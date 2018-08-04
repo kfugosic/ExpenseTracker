@@ -57,7 +57,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         holder.itemView.setTag(id);
         holder.setCategoryName(name);
         holder.setCategoryColor(color);
-        Log.d("TAG123", "onBindViewHolder: " + id + " " + name + " " + color);
+        //Log.d("TAG123", "onBindViewHolder: " + id + " " + name + " " + color);
 
     }
 
@@ -91,12 +91,6 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mCategoryName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.d("TAG123", "onClick: " + getAdapterPosition());
-                }
-            });
         }
 
         public void setCategoryName(String categoryName) {

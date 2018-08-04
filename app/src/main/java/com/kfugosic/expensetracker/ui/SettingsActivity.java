@@ -26,18 +26,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.settings_fragment_content, new SettingsFragment()).commit();
 
-
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case android.R.id.home:
-//                NavUtils.navigateUpFromSameTask(this);
-//                return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 
 }

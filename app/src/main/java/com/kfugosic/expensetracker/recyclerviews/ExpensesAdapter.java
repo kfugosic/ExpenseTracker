@@ -2,6 +2,7 @@ package com.kfugosic.expensetracker.recyclerviews;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,10 +25,12 @@ import com.kfugosic.expensetracker.data.expenses.ExpensesContract;
 import com.kfugosic.expensetracker.loaders.IDataLoaderListener;
 import com.kfugosic.expensetracker.ui.StatisticsActivity;
 import com.kfugosic.expensetracker.widget.ExpensesWidgetService;
+import com.squareup.picasso.Picasso;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,7 +66,6 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
         int photoIndex = mCursor.getColumnIndex(ExpensesContract.ExpensesEntry.COLUMN_PHOTO_LOCATION);
 
         mCursor.moveToPosition(position);
-        Log.d("TAG123345", "onBindViewHolder: " + mCursor.getCount());
         final int id = mCursor.getInt(idIndex);
         float amount = mCursor.getFloat(amountIndex);
         String desc = mCursor.getString(descIndex);
@@ -121,8 +123,8 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
 
         }
 
-        public void setValues(float amount, String desc, int color, Uri uri) {
-            mExpenseAmount.setText(String.format("%.2f", amount));
+        public void setValues(float amount, String desc, int color, final Uri uri) {
+            mExpenseAmount.setText(String.format(Locale.ENGLISH, "%.2f", amount));
             if( !TextUtils.isEmpty(desc)) {
                 mExpenseDescription.setText(desc);
             }
@@ -131,12 +133,15 @@ public class ExpensesAdapter extends RecyclerView.Adapter<ExpensesAdapter.Expens
 
             if(uri != null) {
                 try {
-                    imageStream = mContext.getContentResolver().openInputStream(uri);
-                    //Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                    //mExpenseImage.setImageBitmap(selectedImage);
-                    imageStream.close();
+//                    imageStream = mContext.getContentResolver().openInputStream(uri);
+//                    Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+//                    mExpenseImage.setImageBitmap(selectedImage);
+//                    imageStream.close();
+                    Picasso.get()
+                            .load(uri)
+                            .into(mExpenseImage);
                     mExpenseCategoryColor.setBackgroundColor(color);
-                } catch (java.io.IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(mContext, "Error loading image", Toast.LENGTH_SHORT).show();
                 }

@@ -2,9 +2,12 @@ package com.kfugosic.expensetracker.ui;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -23,6 +27,7 @@ import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.kfugosic.expensetracker.R;
 import com.kfugosic.expensetracker.data.categories.CategoriesContract;
 import com.kfugosic.expensetracker.loaders.DataLoader;
+import com.kfugosic.expensetracker.loaders.IDataLoaderListener;
 import com.kfugosic.expensetracker.recyclerviews.CategoriesAdapter;
 import com.kfugosic.expensetracker.util.ToolbarUtil;
 
@@ -31,9 +36,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
-public class CategoriesActivity extends AppCompatActivity {
+public class CategoriesActivity extends AppCompatActivity implements IDataLoaderListener {
 
-    private static final String TAG = "CategoriesActivity";
+    private static final String KEY_INSTANCE_STATE_RV_POSITION = "rv_position";
     public static final int CATEGORIES_LOADER_ID = 101;
     private static final String CACHED_COLOR_KEY = "color_picker";
 
@@ -48,7 +53,7 @@ public class CategoriesActivity extends AppCompatActivity {
 
     private CategoriesAdapter mAdapter;
     private DataLoader mLoader;
-
+    private Parcelable mLayoutManagerState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +74,12 @@ public class CategoriesActivity extends AppCompatActivity {
         mCategoriesRecyclerView.setAdapter(mAdapter);
         mCategoriesRecyclerView.setHasFixedSize(true);
 
-        mLoader = new DataLoader(this, mAdapter, CategoriesContract.CategoriesEntry.CONTENT_URI);
+        mLoader = new DataLoader(this, this, CategoriesContract.CategoriesEntry.CONTENT_URI);
         initOrRestartLoader();
+
+        if (savedInstanceState != null) {
+            mLayoutManagerState = savedInstanceState.getParcelable(KEY_INSTANCE_STATE_RV_POSITION);
+        }
     }
 
     private void initOrRestartLoader() {
@@ -86,7 +95,7 @@ public class CategoriesActivity extends AppCompatActivity {
 
     @OnTextChanged(R.id.et_category_name)
     protected void handleTextChange(Editable editable) {
-        if(editable == null || editable.toString().trim().isEmpty()) {
+        if (editable == null || editable.toString().trim().isEmpty()) {
             mAddButton.setEnabled(false);
         } else {
             mAddButton.setEnabled(true);
@@ -98,7 +107,7 @@ public class CategoriesActivity extends AppCompatActivity {
         ColorPickerDialogBuilder
                 .with(this)
                 .setTitle("Choose color")
-                .initialColor(((ColorDrawable)mColorPickerView.getBackground()).getColor())
+                .initialColor(((ColorDrawable) mColorPickerView.getBackground()).getColor())
                 .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
                 .density(12)
                 .setPositiveButton("Select", new ColorPickerClickListener() {
@@ -119,8 +128,8 @@ public class CategoriesActivity extends AppCompatActivity {
     @OnClick(R.id.add_button)
     void onAddButtonClick() {
         String name = mCategoryNameView.getText().toString();
-        Integer color = ((ColorDrawable)mColorPickerView.getBackground()).getColor();
-        if(TextUtils.isEmpty(name)){
+        Integer color = ((ColorDrawable) mColorPickerView.getBackground()).getColor();
+        if (TextUtils.isEmpty(name)) {
             Toast.makeText(this, "Please set category name.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -131,19 +140,32 @@ public class CategoriesActivity extends AppCompatActivity {
 
         Uri uri = getContentResolver().insert(CategoriesContract.CategoriesEntry.CONTENT_URI, contentValues);
         getSupportLoaderManager().restartLoader(CATEGORIES_LOADER_ID, null, mLoader);
+
+        try {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e) {
+            // ignorable
+        }
+
+        mCategoryNameView.setText("");
+        mColorPickerView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent));
+        Toast.makeText(this, "New category created!", Toast.LENGTH_SHORT).show();
+
     }
 
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        int color = ((ColorDrawable)mColorPickerView.getBackground()).getColor();
+        int color = ((ColorDrawable) mColorPickerView.getBackground()).getColor();
         outState.putInt(CACHED_COLOR_KEY, color);
+        outState.putParcelable(KEY_INSTANCE_STATE_RV_POSITION, mLayoutManagerState);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if(savedInstanceState != null && savedInstanceState.containsKey(CACHED_COLOR_KEY)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(CACHED_COLOR_KEY)) {
             int color = savedInstanceState.getInt(CACHED_COLOR_KEY);
             mColorPickerView.setBackgroundColor(color);
         }
@@ -153,4 +175,19 @@ public class CategoriesActivity extends AppCompatActivity {
     public DataLoader getLoader() {
         return mLoader;
     }
+
+    @Override
+    public void onDataLoaded(int id, Cursor cursor) {
+        mAdapter.onDataLoaded(id, cursor);
+        if(mLayoutManagerState != null) {
+            mCategoriesRecyclerView.getLayoutManager().onRestoreInstanceState(mLayoutManagerState);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mLayoutManagerState = mCategoriesRecyclerView.getLayoutManager().onSaveInstanceState();
+    }
+
 }

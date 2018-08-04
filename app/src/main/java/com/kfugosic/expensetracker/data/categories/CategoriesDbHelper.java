@@ -1,8 +1,11 @@
 package com.kfugosic.expensetracker.data.categories;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
+
 import com.kfugosic.expensetracker.data.categories.CategoriesContract.CategoriesEntry;
 
 public class CategoriesDbHelper extends SQLiteOpenHelper {
@@ -22,7 +25,20 @@ public class CategoriesDbHelper extends SQLiteOpenHelper {
                 CategoriesEntry.COLUMN_COLOR + " INTEGER NOT NULL);";
         sqLiteDatabase.execSQL(CREATE_TABLE);
 
-        //TODO insertat defaultne
+        // TODO Optimize bulk insert
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, "Groceries");
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_COLOR, -10163947);
+        sqLiteDatabase.insert(CategoriesEntry.TABLE_NAME, null, contentValues);
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, "Vehicle");
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_COLOR, -15374871);
+        sqLiteDatabase.insert(CategoriesEntry.TABLE_NAME, null, contentValues);
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, "Bills");
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_COLOR, -7829368);
+        sqLiteDatabase.insert(CategoriesEntry.TABLE_NAME, null, contentValues);
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_NAME, "Medical");
+        contentValues.put(CategoriesContract.CategoriesEntry.COLUMN_COLOR, -1496534);
+        sqLiteDatabase.insert(CategoriesEntry.TABLE_NAME, null, contentValues);
     }
 
     @Override

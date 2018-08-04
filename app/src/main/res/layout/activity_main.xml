@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.MainActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.MainActivity">
 
     <ScrollView
         android:id="@+id/scrollview"
@@ -18,138 +17,141 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <include  layout="@layout/toolbar_container" android:id="@+id/toolbar_container_snip" />
+            <include
+                android:id="@+id/toolbar_container_snip"
+                layout="@layout/toolbar_container" />
 
             <TextView
                 android:id="@+id/tv_expenses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/tv_expenses_margin_top"
                 android:gravity="center"
-                android:layout_marginTop="8dp"
-                android:text="Today's expenses"
-                ads:layout_constraintTop_toBottomOf="@id/toolbar_container_snip"/>
+                android:text="@string/tv_today_desc"
+                ads:layout_constraintTop_toBottomOf="@id/toolbar_container_snip" />
 
             <TextView
                 android:id="@+id/tv_amount_today"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:padding="12dp"
-                android:textSize="40sp"
-                android:text="$20"
+                android:padding="@dimen/tv_amount_today_padding"
                 android:textColor="@color/colorPrimary"
-                ads:layout_constraintTop_toBottomOf="@id/tv_expenses"/>
+                android:textSize="@dimen/tv_amount_today_textsize"
+                ads:layout_constraintTop_toBottomOf="@id/tv_expenses" />
 
             <TextView
                 android:id="@+id/tv_week_desc"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/zerodp"
                 android:layout_height="wrap_content"
-                android:text="This week"
                 android:gravity="center"
-                ads:layout_constraintTop_toBottomOf="@id/tv_amount_today"
+                android:text="@string/tv_week_desc"
+                ads:layout_constraintEnd_toStartOf="@id/tv_month_desc"
                 ads:layout_constraintStart_toStartOf="parent"
-                ads:layout_constraintEnd_toStartOf="@id/tv_month_desc"/>
+                ads:layout_constraintTop_toBottomOf="@id/tv_amount_today" />
 
             <TextView
                 android:id="@+id/tv_month_desc"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/zerodp"
                 android:layout_height="wrap_content"
-                android:text="This month"
                 android:gravity="center"
-                ads:layout_constraintTop_toBottomOf="@id/tv_amount_today"
+                android:text="@string/tv_month_desc"
+                ads:layout_constraintEnd_toStartOf="@id/tv_balance_desc"
                 ads:layout_constraintStart_toEndOf="@id/tv_week_desc"
-                ads:layout_constraintEnd_toStartOf="@id/tv_balance_desc"/>
+                ads:layout_constraintTop_toBottomOf="@id/tv_amount_today" />
 
             <TextView
                 android:id="@+id/tv_balance_desc"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/zerodp"
                 android:layout_height="wrap_content"
-                android:text="Total balance"
                 android:gravity="center"
-                ads:layout_constraintTop_toBottomOf="@id/tv_amount_today"
+                android:text="@string/tv_balance_desc"
+                ads:layout_constraintEnd_toEndOf="parent"
                 ads:layout_constraintStart_toEndOf="@id/tv_month_desc"
-                ads:layout_constraintEnd_toEndOf="parent"/>
+                ads:layout_constraintTop_toBottomOf="@id/tv_amount_today" />
 
 
             <TextView
                 android:id="@+id/tv_amount_week"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/zerodp"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:textSize="20sp"
                 android:gravity="center"
-                android:text="$20"
+                android:padding="@dimen/tv_amount_week_padding"
                 android:textColor="@color/colorPrimaryDark"
-                ads:layout_constraintTop_toBottomOf="@id/tv_week_desc"
+                android:textSize="@dimen/tv_amount_week_textsize"
+                ads:layout_constraintEnd_toStartOf="@id/tv_amount_month"
                 ads:layout_constraintStart_toStartOf="parent"
-                ads:layout_constraintEnd_toStartOf="@id/tv_amount_month"/>
+                ads:layout_constraintTop_toBottomOf="@id/tv_week_desc" />
 
             <TextView
                 android:id="@+id/tv_amount_month"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/zerodp"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:textSize="20sp"
                 android:gravity="center"
-                android:text="$20"
+                android:padding="@dimen/tv_amount_week_padding"
                 android:textColor="@color/colorPrimaryDark"
-                ads:layout_constraintTop_toBottomOf="@id/tv_week_desc"
+                android:textSize="@dimen/tv_amount_week_textsize"
+                ads:layout_constraintEnd_toStartOf="@id/tv_income_minus_spent"
                 ads:layout_constraintStart_toEndOf="@id/tv_amount_week"
-                ads:layout_constraintEnd_toStartOf="@id/tv_income_minus_spent"/>
+                ads:layout_constraintTop_toBottomOf="@id/tv_week_desc" />
 
             <TextView
                 android:id="@+id/tv_income_minus_spent"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/zerodp"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:textSize="20sp"
                 android:gravity="center"
-                android:text="$20"
+                android:padding="@dimen/tv_amount_week_padding"
                 android:textColor="@color/colorPrimaryDark"
-                ads:layout_constraintTop_toBottomOf="@id/tv_week_desc"
+                android:textSize="@dimen/tv_amount_week_textsize"
+                ads:layout_constraintEnd_toEndOf="parent"
                 ads:layout_constraintStart_toEndOf="@id/tv_amount_month"
-                ads:layout_constraintEnd_toEndOf="parent"/>
+                ads:layout_constraintTop_toBottomOf="@id/tv_week_desc" />
 
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/piechart"
-                android:layout_width="230dp"
-                android:layout_height="230dp"
-                android:layout_margin="10dp"
-                ads:layout_constraintTop_toBottomOf="@id/tv_amount_week"
+                android:layout_width="@dimen/piechart_dim"
+                android:layout_height="@dimen/piechart_dim"
+                android:layout_margin="@dimen/piechart_layout_margin"
+                android:contentDescription="@string/pie_chart"
                 ads:layout_constraintBottom_toTopOf="@id/btn_statistics"
+                ads:layout_constraintEnd_toEndOf="parent"
                 ads:layout_constraintStart_toStartOf="parent"
-                ads:layout_constraintEnd_toEndOf="parent"/>
+                ads:layout_constraintTop_toBottomOf="@id/tv_amount_week" />
 
             <Button
                 android:id="@+id/btn_statistics"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_margin="25dp"
-                android:text="All expenses list"
-                ads:layout_constraintBottom_toTopOf="@id/adView"/>
+                android:layout_height="@dimen/btn_all_expenses_height"
+                android:layout_margin="@dimen/btn_all_expenses_margin"
+                android:focusable="true"
+                android:text="@string/btn_all_expenses_text"
+                ads:layout_constraintBottom_toTopOf="@id/adView" />
 
             <com.google.android.gms.ads.AdView
                 android:id="@+id/adView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
+                android:focusable="true"
                 ads:adSize="SMART_BANNER"
                 ads:adUnitId="@string/banner_ad_unit_id"
-                ads:layout_constraintBottom_toBottomOf="parent"/>
+                ads:layout_constraintBottom_toBottomOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
 
     </ScrollView>
 
-    <android.support.design.widget.FloatingActionButton android:id="@+id/fab_add"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_add"
         android:layout_width="@dimen/fab_dims"
         android:layout_height="@dimen/fab_dims"
-        android:src="@drawable/ic_add_black_24dp"
-        android:contentDescription="@string/fab_content_desc"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:contentDescription="@string/fab_content_desc"
+        android:focusable="true"
+        android:src="@drawable/ic_add_black_24dp" />
 
 </RelativeLayout>
